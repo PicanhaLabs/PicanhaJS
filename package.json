@@ -1,0 +1,30 @@
+{
+  "name": "Static",
+  "version": "0.0.1",
+  "description": "Lite Static Generator",
+  "main": "index.js",
+  "dependencies": {
+    "front-matter": "^1.0.0",
+    "handlebars": "^3.0.3",
+    "marked": "^0.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabrielalan/static.git"
+  },
+  "keywords": [
+    "Static",
+    "Site",
+    "Generator"
+  ],
+  "author": "Gabriel Alan",
+  "license": "MIT License",
+  "bugs": {
+    "url": "https://github.com/gabrielalan/static/issues"
+  },
+  "homepage": "https://github.com/gabrielalan/static"
+}
