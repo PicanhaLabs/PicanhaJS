@@ -1,0 +1,15 @@
+{
+	"dist": "./_build/",
+	"posts": {
+		"dist": { 
+			"path": ":year/:month/:day/:name/",
+			"name": "index.html"
+		},
+		"source": "./_posts"
+	},
+	"template": {
+		"home": "./_templates/home.html",
+		"post": "./_templates/post.html",
+		"partials": "./_templates/partials"
+	}
+}

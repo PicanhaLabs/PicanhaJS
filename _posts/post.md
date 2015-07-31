@@ -1,7 +1,7 @@
 ---
 title: Primeiro Post
 author: Gabriel Alan
-categorys: Primeiro, Post
+categories: Primeiro, Post
 tags: Post, Content, Tag
 ---
 

@@ -1,28 +1,10 @@
 var fs = require('fs'),
 	fm = require('front-matter'),
 	marked = require('marked'),
-    path = require('path'),
-    handlebars = require('handlebars'),
-	utils = require('./static/utils');
-
-/**
- * @TODO reallocate this parameters to an .json config file
- */
-var parameters = {
-	dist: './_build/',
-	posts: {
-		dist: { 
-			path: ':year/:month/:day/:name/',
-			name: 'index.html'
-		},
-		source: './_posts'
-	},
-	template: {
-		home: './_templates/home.html',
-		post: './_templates/post.html',
-		partials: './_templates/partials'
-	}
-};
+	path = require('path'),
+	handlebars = require('handlebars'),
+	utils = require('./static/utils'),
+	parameters = require('./config.json');
 	
 utils.registerPartials( handlebars, parameters.template.partials );
 	
@@ -135,7 +117,7 @@ fs.readdir(parameters.posts.source, function(readError, files){
 					}
 					
 					counter++;
-				})	
+				})
 				
 			});
 		})(path.join(parameters.posts.source, file));
