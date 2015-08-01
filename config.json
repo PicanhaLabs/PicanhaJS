@@ -8,8 +8,10 @@
 		"source": "./_posts"
 	},
 	"template": {
-		"home": "./_templates/home.html",
-		"post": "./_templates/post.html",
-		"partials": "./_templates/partials"
+		"path": "./_templates/",
+		"home": "home.html",
+		"post": "post.html",
+		"partials": "partials",
+		"static": ["css", "js", "img"]
 	}
 }

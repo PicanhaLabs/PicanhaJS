@@ -3,11 +3,12 @@ var fs = require('fs'),
 	marked = require('marked'),
 	path = require('path'),
 	Promise = require('promise'),
+	ncp = require('ncp').ncp,
 	handlebars = require('handlebars'),
 	utils = require('./static/utils'),
 	parameters = require('./config.json');
 	
-utils.registerPartials( handlebars, parameters.template.partials );
+utils.registerPartials( handlebars, path.join(parameters.template.path, parameters.template.partials) );
 	
 /**
  * @TODO maybe this can be reallocated to the .json config file too
@@ -29,7 +30,7 @@ var isFile, newFilePath, newFileName, len = 0, counter = 1, postsData = [], post
  * Creates the index file
  */
 function createHome(posts) {
-	fs.readFile(parameters.template.home, 'utf8', function(fileErr, data){
+	fs.readFile(path.join(parameters.template.path, parameters.template.home), 'utf8', function(fileErr, data){
 		
 		if( fileErr )
 			throw fileErr;
@@ -124,7 +125,7 @@ function buildPosts(files){
 	
 	len = files.length;
 	
-	var postHtml = fs.readFileSync(parameters.template.post, {encoding: 'utf8'});
+	var postHtml = fs.readFileSync(path.join(parameters.template.path, parameters.template.post), {encoding: 'utf8'});
 	
 	postTpl = handlebars.compile(postHtml);
 	
@@ -135,6 +136,10 @@ function buildPosts(files){
 	});
 	
 };
+
+parameters.template.static.forEach(function(current){
+	ncp(path.join(parameters.template.path, current), path.join(parameters.dist, current));
+});
 
 /**
  * Reads the posts files, and make the distribution post file
