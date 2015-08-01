@@ -6,7 +6,8 @@
   "dependencies": {
     "front-matter": "^1.0.0",
     "handlebars": "^3.0.3",
-    "marked": "^0.3.4"
+    "marked": "^0.3.4",
+    "promise": "^7.0.3"
   },
   "devDependencies": {},
   "scripts": {

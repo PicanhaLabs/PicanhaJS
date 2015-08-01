@@ -2,6 +2,7 @@ var fs = require('fs'),
 	fm = require('front-matter'),
 	marked = require('marked'),
 	path = require('path'),
+	Promise = require('promise'),
 	handlebars = require('handlebars'),
 	utils = require('./static/utils'),
 	parameters = require('./config.json');
@@ -48,13 +49,78 @@ function createHome(posts) {
 	});
 }
 
-/**
- * Reads the posts files, and make the distribution post file
- */
-fs.readdir(parameters.posts.source, function(readError, files){
-	
-	if( readError )
-		throw readError;
+function readDir( path ) {
+	return new Promise(function(resolve, reject){
+		
+		fs.readdir(path, function(readError, files){
+			if( readError )
+				reject(readError);
+				
+			resolve(files);
+		});
+		
+	});
+}
+
+function makePost( filePath, len, tpl ){
+	fs.stat(filePath, function(statsError, stats){
+
+		if( stats.isDirectory() )
+			return true;
+			
+		if( statsError )
+			throw statsError;		
+			
+		fs.readFile(filePath, 'utf8', function(fileErr, data){
+			if (fileErr) 
+				throw fileErr;
+			
+			var content = fm(data),
+				result = content.attributes;
+				
+			result.body = marked(content.body);
+			
+			newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
+			newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
+			newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
+			newFilePath = newFilePath.replace(':name', path.basename(filePath).split('.')[0]);
+			
+			newFilePath = path.join(parameters.dist, newFilePath);
+			
+			newFileName = path.join(newFilePath, parameters.posts.dist.name);
+			
+			utils.recursiveMkdir(newFilePath);
+			
+			console.log('Creating post: ' + newFileName);
+			
+			result.url = newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
+			
+			postsData.push(result);
+			
+			var html = tpl({
+				post: result
+			});				
+			
+			fs.writeFile(newFileName, html, function(writeError){
+				if( writeError )
+					throw writeError;
+			});
+			
+			/**
+			 * Temporary my ass * solution for this callback hell
+			 * For create the home/index file, we must all posts data
+			 */
+			if( counter >= len ) {
+				createHome(postsData);
+			}
+			
+			counter++;
+		})
+		
+	});
+};
+
+function buildPosts(files){
 	
 	len = files.length;
 	
@@ -64,64 +130,15 @@ fs.readdir(parameters.posts.source, function(readError, files){
 	
 	files.forEach(function(file) {
 	
-		(function( filePath ){
-			fs.stat(filePath, function(statsError, stats){
-		
-				if( stats.isDirectory() )
-					return true;
-					
-				if( statsError )
-					throw statsError;		
-					
-				fs.readFile(filePath, 'utf8', function(fileErr, data){
-					if (fileErr) 
-						throw fileErr;
-					
-					var content = fm(data),
-						result = content.attributes;
-						
-					result.body = marked(content.body);
-					
-					newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
-					newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
-					newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
-					newFilePath = newFilePath.replace(':name', file.split('.')[0]);
-					
-					newFilePath = path.join(parameters.dist, newFilePath);
-					
-					newFileName = path.join(newFilePath, parameters.posts.dist.name);
-					
-					utils.recursiveMkdir(newFilePath);
-					
-					console.log('Creating post: ' + newFileName);
-					
-					result.url = newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
-					
-					postsData.push(result);
-					
-					var html = postTpl({
-						post: result
-					});				
-					
-					fs.writeFile(newFileName, html, function(writeError){
-						if( writeError )
-							throw writeError;
-					});
-					
-					/**
-					 * Temporary my ass * solution for this callback hell
-					 * For create the home/index file, we must all posts data
-					 */
-					if( counter >= len ) {
-						createHome(postsData);
-					}
-					
-					counter++;
-				})
-				
-			});
-		})(path.join(parameters.posts.source, file));
+		makePost(path.join(parameters.posts.source, file), len, postTpl);
 		
 	});
 	
-});
+};
+
+/**
+ * Reads the posts files, and make the distribution post file
+ */
+readDir(parameters.posts.source)
+	.then(buildPosts)
+	.catch(console.log);
