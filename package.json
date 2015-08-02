@@ -6,6 +6,7 @@
   "dependencies": {
     "front-matter": "^1.0.0",
     "handlebars": "^3.0.3",
+    "highlight.js": "^8.7.0",
     "marked": "^0.3.4",
     "ncp": "^2.0.0",
     "promise": "^7.0.3"

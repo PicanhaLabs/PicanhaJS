@@ -12,6 +12,9 @@
 		"home": "home.html",
 		"post": "post.html",
 		"partials": "partials",
-		"static": ["css", "js", "img"]
+		"static": ["css", "js", "img"],
+		"globals": {
+			"baseurl": "http://static.local/_build/"
+		}
 	}
 }

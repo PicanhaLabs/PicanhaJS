@@ -3,6 +3,7 @@ var fs = require('fs'),
 	marked = require('marked'),
 	path = require('path'),
 	Promise = require('promise'),
+	highlight = require('highlight.js'),
 	ncp = require('ncp').ncp,
 	handlebars = require('handlebars'),
 	utils = require('./static/utils'),
@@ -21,7 +22,10 @@ marked.setOptions({
 	pedantic: false,
 	sanitize: true,
 	smartLists: true,
-	smartypants: false
+	smartypants: false,
+	highlight: function (code) {
+		return highlight.highlightAuto(code).value;
+	}
 });
 
 var isFile, newFilePath, newFileName, len = 0, counter = 1, postsData = [], postTpl;
@@ -99,7 +103,8 @@ function makePost( filePath, len, tpl ){
 			postsData.push(result);
 			
 			var html = tpl({
-				post: result
+				post: result,
+				globals: parameters.template.globals
 			});				
 			
 			fs.writeFile(newFileName, html, function(writeError){

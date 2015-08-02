@@ -5,11 +5,24 @@ categories: Primeiro, Post
 tags: Post, Content, Tag
 ---
 
-Paragraph
-Paragraph
-Paragraph
-Paragraph
-Paragraph
+## Read dir
+
+Some code
+
+```js
+function readDir( path ) {
+	return new Promise(function(resolve, reject){
+		
+		fs.readdir(path, function(readError, files){
+			if( readError )
+				reject(readError);
+				
+			resolve(files);
+		});
+		
+	});
+}
+```
 
 ## Other Title
 ### Other Title
