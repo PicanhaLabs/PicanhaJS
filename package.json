@@ -1,38 +1,51 @@
 {
-  "name": "picanhajs",
-  "version": "0.0.92",
-  "description": "Site Static Generator",
-  "dependencies": {
-    "front-matter": "^1.0.0",
-    "handlebars": "^3.0.3",
-    "highlight.js": "^8.7.0",
-    "marked": "^0.3.4",
-    "ncp": "^2.0.0",
-    "promise": "^7.0.3"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"No test specified\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PicanhaLabs/PicanhaJS.git"
-  },
-  "keywords": [
-    "Static",
-    "Site",
-    "Generator",
-    "Node",
-    "Picanha"
-  ],
-  "bin": {
-    "picanha": "picanha.js"
-  },
-  "preferGlobal": "true",
-  "author": "Picanha Labs",
-  "license": "MIT License",
-  "bugs": {
-    "url": "https://github.com/PicanhaLabs/Picanha/issues"
-  },
-  "homepage": "https://github.com/PicanhaLabs"
+	"name": "picanhajs",
+
+	"version": "0.0.93",
+
+	"description": "Site Static Generator",
+
+	"preferGlobal": "true",
+
+	"author": "Picanha Labs",
+
+	"license": "MIT License",
+
+	"homepage": "https://github.com/PicanhaLabs",
+
+	"devDependencies": {},
+
+	"dependencies": {
+		"front-matter": "^1.0.0",
+		"handlebars": "^3.0.3",
+		"highlight.js": "^8.7.0",
+		"marked": "^0.3.4",
+		"ncp": "^2.0.0",
+		"promise": "^7.0.3"
+	},
+
+	"scripts": {
+		"test": "echo \"No test specified\""
+	},
+
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/PicanhaLabs/PicanhaJS.git"
+	},
+
+	"keywords": [
+		"Static",
+		"Site",
+		"Generator",
+		"Node",
+		"Picanha"
+	],
+
+	"bin": {
+		"picanha": "bin/picanha.js"
+	},
+
+	"bugs": {
+		"url": "https://github.com/PicanhaLabs/Picanha/issues"
+	}
 }

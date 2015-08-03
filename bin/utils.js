@@ -1,10 +1,10 @@
-var fs = require('fs'), 
-	path = require('path');
+var fs		= require('fs'), 
+	path	= require('path');
 
 /**
  * Register the partials on handlebars
  */
-exports.registerPartials = function(handlebars, srcPath) {
+exports.registerPartials	= function(handlebars, srcPath) {
 	var filePath;
 	
 	fs.readdir(srcPath, function(readError, files){
@@ -31,15 +31,14 @@ exports.registerPartials = function(handlebars, srcPath) {
 /**
  * Create dir recursively
  */
-exports.recursiveMkdir = function(srcPath) {
+exports.recursiveMkdir		= function(srcPath) {
 	
 	var paths = srcPath.split(path.sep), current = '', exists;
 	
 	paths.forEach(function(p){
 		
 		current = path.join(current, p);
-
-		exists = fs.existsSync(current);
+		exists	= fs.existsSync(current);
 		
 		if( !exists ) {
 			fs.mkdirSync( current );
@@ -52,8 +51,10 @@ exports.recursiveMkdir = function(srcPath) {
 /**
  * Pads the number with zeros
  */
-exports.padNumber = function(num, size) {
+exports.padNumber			= function(num, size) {
 	var s = String(num);
-	while (s.length < (size || 2)) {s = "0" + s;}
+	while (s.length < (size || 2))
+		s = "0" + s;
+
 	return s;
 };

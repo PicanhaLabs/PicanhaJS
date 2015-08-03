@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-process.title = 'picanha';
+process.title	= 'picanha';
 
-var fs = require('fs'),
-	command = process.argv.slice(2);
-	path = require('path'),
-	Promise = require('promise'),
-	ncp = require('ncp').ncp,
-	clientpath = process.cwd(),
-	libpath = process.mainModule.paths[1] + '/picanhajs';
+var fs 			= require('fs'),
+	command 	= process.argv.slice(2);
+	path 		= require('path'),
+	Promise 	= require('promise'),
+	ncp 		= require('ncp').ncp,
+	clientpath	= process.cwd(),
+	libpath 	= process.mainModule.paths[1] + '/picanhajs';
 
 if (command[0] === 'create') {
 	console.log('Preparing BBQ.\n');
@@ -22,7 +22,7 @@ if (command[0] === 'create') {
 
 	var templatesPormise = new Promise(function(resolve) {
 		ncp(libpath + '/_templates', clientpath + '/_templates', function() {
-			console.log('Lightening the fire up...');
+			console.log('Lighting the fire...');
 			resolve();
 		});
 	});
@@ -31,13 +31,15 @@ if (command[0] === 'create') {
 	Promise.all([postsPormise, templatesPormise]).then(function() {
 		console.log('\nYou can start cooking!');
 	});
+
 } else {
-	var fm = require('front-matter'),
-		marked = require('marked'),
-		highlight = require('highlight.js'),
-		handlebars = require('handlebars'),
-		utils = require('./static/utils'),
-		parameters = require('./config.json');
+	
+	var fm			= require('front-matter'),
+		marked		= require('marked'),
+		highlight	= require('highlight.js'),
+		handlebars	= require('handlebars'),
+		utils		= require('./utils'),
+		parameters	= require('./picanha.json');
 
 	utils.registerPartials( handlebars, path.join(parameters.template.path, parameters.template.partials) );
 
@@ -45,26 +47,33 @@ if (command[0] === 'create') {
 	 * @TODO maybe this can be reallocated to the .json config file too
 	 */
 	marked.setOptions({
-		renderer: new marked.Renderer(),
-		gfm: true,
-		tables: true,
-		breaks: false,
-		pedantic: false,
-		sanitize: true,
-		smartLists: true,
-		smartypants: false,
-		highlight: function (code) {
+		renderer	: new marked.Renderer(),
+		gfm			: true,
+		tables		: true,
+		breaks		: false,
+		pedantic	: false,
+		sanitize	: true,
+		smartLists	: true,
+		smartypants : false,
+		highlight 	: function (code) {
 			return highlight.highlightAuto(code).value;
 		}
 	});
 
-	var isFile, newFilePath, newFileName, len = 0, counter = 1, postsData = [], postTpl, pageTpl;
+	var len			= 0,
+		counter		= 1,
+		postsData	= [],
+		isFile,
+		newFilePath,
+		newFileName,
+		postTpl,
+		pageTpl;
 
 	postTpl = handlebars.compile(fs.readFileSync(path.join(parameters.template.path, parameters.template.post), {encoding: 'utf8'}));
 	pageTpl = handlebars.compile(fs.readFileSync(path.join(parameters.template.path, 'page.html'), {encoding: 'utf8'}));
 
 	/**
-	 * Creates the index file
+	 * Creates index file
 	 */
 	function createHome(posts) {
 		fs.readFile(path.join(parameters.template.path, parameters.template.home), 'utf8', function(fileErr, data){
@@ -72,16 +81,15 @@ if (command[0] === 'create') {
 			if( fileErr )
 				throw fileErr;
 			
-			var tpl = handlebars.compile(data);
+			var tpl		= handlebars.compile(data),	
+				result	= tpl({
+					posts	: posts,
+					globals : {
+						baseurl: ''
+					}
+				});
 			
-			var result = tpl({
-				posts: posts,
-				globals: {
-					baseurl: ''
-				}
-			});
-			
-			console.log('Creating the home index.html');
+			console.log('Creating home');
 			
 			fs.writeFile(path.join(parameters.dist, 'index.html'), result, function(writeError){
 				if( writeError )
@@ -116,15 +124,16 @@ if (command[0] === 'create') {
 				if (fileErr) 
 					throw fileErr;
 				
-				var content = fm(data),
-					filename = path.basename(filePath).split('.')[0],
-					result = content.attributes,
-					ispage = result.template === 'page';
+				var content		= fm(data),
+					filename	= path.basename(filePath).split('.')[0],
+					result		= content.attributes,
+					ispage		= result.template === 'page';
 					
-				result.body = marked(content.body);
-				result.excerpt = result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
+				result.body		= marked(content.body);
+				result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
 				if( !ispage ) {
+
 					newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
 					newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
 					newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
@@ -135,25 +144,27 @@ if (command[0] === 'create') {
 					newFileName = path.join(newFilePath, parameters.posts.dist.name);
 
 					postsData.push(result);
+
 				} else {
+
 					newFilePath = path.join(parameters.dist, filename);
 					newFileName = path.join(newFilePath, parameters.posts.dist.name);
+
 				}
 				
 				utils.recursiveMkdir(newFilePath);
 				
 				console.log('Creating: ' + newFileName);
 				
-				result.url = newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
+				result.url	= newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
 				
-				var tpl = ispage ? pageTpl : postTpl;
-
-				var html = tpl({
-					post: result,
-					globals: {
-						baseurl: ispage ? '../' : '../../../../'
-					}
-				});				
+				var tpl		= ispage ? pageTpl : postTpl,
+					html	= tpl({
+						post: result,
+						globals: {
+							baseurl: ispage ? '../' : '../../../../'
+						}
+					});				
 				
 				fs.writeFile(newFileName, html, function(writeError){
 					if( writeError )
@@ -164,12 +175,11 @@ if (command[0] === 'create') {
 				 * Temporary my ass * solution for this callback hell
 				 * For create the home/index file, we must all posts data
 				 */
-				if( counter >= len ) {
+				if( counter >= len )
 					createHome(postsData);
-				}
 				
 				counter++;
-			})
+			});
 			
 		});
 	};
@@ -196,5 +206,4 @@ if (command[0] === 'create') {
 	readDir(parameters.posts.source)
 		.then(buildPosts)
 		.catch(console.log);
-
 }
