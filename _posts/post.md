@@ -7,7 +7,7 @@ tags: Post, Content, Tag
 
 ## Read dir
 
-Some code
+First post excerpt
 
 ```js
 function readDir( path ) {
