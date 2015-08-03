@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Blog</title>
+	{{> includes}}
+</head>
+<body>	
+	{{> header}}
+	
+	{{#post}}
+	
+	<h2>Page</h2>
+	<h3>{{title}}</h3>
+
+	<div class="post-content">
+		{{{body}}}
+	</div>
+	
+	{{/post}}
+</body>
+</html>

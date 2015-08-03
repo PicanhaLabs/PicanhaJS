@@ -10,7 +10,7 @@ var fs = require('fs'),
 	parameters = require('./config.json');
 	
 utils.registerPartials( handlebars, path.join(parameters.template.path, parameters.template.partials) );
-	
+
 /**
  * @TODO maybe this can be reallocated to the .json config file too
  */
@@ -28,7 +28,10 @@ marked.setOptions({
 	}
 });
 
-var isFile, newFilePath, newFileName, len = 0, counter = 1, postsData = [], postTpl;
+var isFile, newFilePath, newFileName, len = 0, counter = 1, postsData = [], postTpl, pageTpl;
+
+postTpl = handlebars.compile(fs.readFileSync(path.join(parameters.template.path, parameters.template.post), {encoding: 'utf8'}));
+pageTpl = handlebars.compile(fs.readFileSync(path.join(parameters.template.path, 'page.html'), {encoding: 'utf8'}));
 
 /**
  * Creates the index file
@@ -70,7 +73,7 @@ function readDir( path ) {
 	});
 }
 
-function makePost( filePath, len, tpl ){
+function makePost( filePath, len ){
 	fs.stat(filePath, function(statsError, stats){
 
 		if( stats.isDirectory() )
@@ -84,31 +87,40 @@ function makePost( filePath, len, tpl ){
 				throw fileErr;
 			
 			var content = fm(data),
-				result = content.attributes;
+				filename = path.basename(filePath).split('.')[0],
+				result = content.attributes,
+				ispage = result.template === 'page';
 				
 			result.body = marked(content.body);
-			
-			newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
-			newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
-			newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
-			newFilePath = newFilePath.replace(':name', path.basename(filePath).split('.')[0]);
-			
-			newFilePath = path.join(parameters.dist, newFilePath);
-			
-			newFileName = path.join(newFilePath, parameters.posts.dist.name);
+
+			if( !ispage ) {
+				newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
+				newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
+				newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
+				newFilePath = newFilePath.replace(':name', filename);
+				
+				newFilePath = path.join(parameters.dist, newFilePath);
+				
+				newFileName = path.join(newFilePath, parameters.posts.dist.name);
+
+				postsData.push(result);
+			} else {
+				newFilePath = path.join(parameters.dist, filename);
+				newFileName = path.join(newFilePath, parameters.posts.dist.name);
+			}
 			
 			utils.recursiveMkdir(newFilePath);
 			
-			console.log('Creating post: ' + newFileName);
+			console.log('Creating: ' + newFileName);
 			
 			result.url = newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
 			
-			postsData.push(result);
-			
+			var tpl = ispage ? pageTpl : postTpl;
+
 			var html = tpl({
 				post: result,
 				globals: {
-					baseurl: '../../../../'
+					baseurl: ispage ? '../' : '../../../../'
 				}
 			});				
 			
@@ -135,13 +147,9 @@ function buildPosts(files){
 	
 	len = files.length;
 	
-	var postHtml = fs.readFileSync(path.join(parameters.template.path, parameters.template.post), {encoding: 'utf8'});
-	
-	postTpl = handlebars.compile(postHtml);
-	
 	files.forEach(function(file) {
 	
-		makePost(path.join(parameters.posts.source, file), len, postTpl);
+		makePost(path.join(parameters.posts.source, file), len);
 		
 	});
 	
