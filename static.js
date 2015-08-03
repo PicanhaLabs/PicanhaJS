@@ -92,6 +92,7 @@ function makePost( filePath, len ){
 				ispage = result.template === 'page';
 				
 			result.body = marked(content.body);
+			result.excerpt = result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
 			if( !ispage ) {
 				newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
