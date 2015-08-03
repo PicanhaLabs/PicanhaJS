@@ -8,7 +8,7 @@
 		"source": "./_posts"
 	},
 	"template": {
-		"path": "./_templates/",
+		"path": "./_templates/default_theme/",
 		"home": "home.html",
 		"post": "post.html",
 		"partials": "partials",
