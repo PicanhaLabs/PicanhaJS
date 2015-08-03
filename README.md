@@ -1,7 +1,7 @@
 ## Installing
 
 ```
-npm install -g picanha
+npm install -g picanhajs
 ```
 
 ## Creating
