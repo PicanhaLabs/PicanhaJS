@@ -8,20 +8,26 @@ var fs 			= require('fs'),
 	Promise 	= require('promise'),
 	ncp 		= require('ncp').ncp,
 	clientpath	= process.cwd(),
-	libpath 	= process.mainModule.paths[1] + '/picanhajs';
+	libpath 	= process.mainModule.paths[2] + '/picanhajs';
 
 if (command[0] === 'create') {
 	console.log('Preparing BBQ.\n');
 	
 	var postsPormise = new Promise(function(resolve) {
-		ncp(libpath + '/_posts', clientpath + '/_posts', function() {
-			console.log('Seasoning the meat...');
+		ncp(path.join(libpath, '/_posts'), path.join(clientpath, '/_posts'), function(error) {
+			if( error )
+				throw error;
+
+			console.log('Seasoning the meat (in a right way, just salt and pepper)...');
 			resolve();
 		});
 	});
 
 	var templatesPormise = new Promise(function(resolve) {
-		ncp(libpath + '/_templates', clientpath + '/_templates', function() {
+		ncp(path.join(libpath, '/_templates'), path.join(clientpath, '/_templates'), function(error) {
+			if( error )
+				throw error;
+
 			console.log('Lighting the fire...');
 			resolve();
 		});
@@ -60,9 +66,7 @@ if (command[0] === 'create') {
 		}
 	});
 
-	var len			= 0,
-		counter		= 1,
-		postsData	= [],
+	var postsData = [],
 		isFile,
 		newFilePath,
 		newFileName,
@@ -75,25 +79,29 @@ if (command[0] === 'create') {
 	/**
 	 * Creates index file
 	 */
-	function createHome(posts) {
-		fs.readFile(path.join(parameters.template.path, parameters.template.home), 'utf8', function(fileErr, data){
-			
-			if( fileErr )
-				throw fileErr;
-			
-			var tpl		= handlebars.compile(data),	
-				result	= tpl({
-					posts	: posts,
-					globals : {
-						baseurl: ''
-					}
+	function createHome() {
+		return new Promise(function(resolve, reject){
+			fs.readFile(path.join(parameters.template.path, parameters.template.home), 'utf8', function(fileErr, data){
+				
+				if( fileErr )
+					throw fileErr;
+				
+				var tpl		= handlebars.compile(data),	
+					result	= tpl({
+						posts	: postsData,
+						globals : {
+							baseurl: ''
+						}
+					});
+				
+				console.log('Creating home');
+				
+				fs.writeFile(path.join(parameters.dist, 'index.html'), result, function(writeError){
+					if( writeError )
+						throw writeError;
 				});
-			
-			console.log('Creating home');
-			
-			fs.writeFile(path.join(parameters.dist, 'index.html'), result, function(writeError){
-				if( writeError )
-					throw writeError;
+
+				resolve();
 			});
 		});
 	}
@@ -111,99 +119,104 @@ if (command[0] === 'create') {
 		});
 	}
 
-	function makePost( filePath, len ){
-		fs.stat(filePath, function(statsError, stats){
+	function makePost( filePath ){
+		var promise = new Promise(function(resolve) {
 
-			if( stats.isDirectory() )
-				return true;
-				
-			if( statsError )
-				throw statsError;		
-				
-			fs.readFile(filePath, 'utf8', function(fileErr, data){
-				if (fileErr) 
-					throw fileErr;
-				
-				var content		= fm(data),
-					filename	= path.basename(filePath).split('.')[0],
-					result		= content.attributes,
-					ispage		= result.template === 'page';
+			fs.stat(filePath, function(statsError, stats){
+
+				if( stats.isDirectory() )
+					return true;
 					
-				result.body		= marked(content.body);
-				result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
-
-				if( !ispage ) {
-
-					newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
-					newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
-					newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
-					newFilePath = newFilePath.replace(':name', filename);
+				if( statsError )
+					throw statsError;		
 					
-					newFilePath = path.join(parameters.dist, newFilePath);
+				fs.readFile(filePath, 'utf8', function(fileErr, data){
+					if (fileErr) 
+						throw fileErr;
 					
-					newFileName = path.join(newFilePath, parameters.posts.dist.name);
+					var content		= fm(data),
+						filename	= path.basename(filePath).split('.')[0],
+						result		= content.attributes,
+						ispage		= result.template === 'page';
+						
+					result.body		= marked(content.body);
+					result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
-					postsData.push(result);
+					if( !ispage ) {
 
-				} else {
+						newFilePath = parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
+						newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
+						newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
+						newFilePath = newFilePath.replace(':name', filename);
+						
+						newFilePath = path.join(parameters.dist, newFilePath);
+						
+						newFileName = path.join(newFilePath, parameters.posts.dist.name);
 
-					newFilePath = path.join(parameters.dist, filename);
-					newFileName = path.join(newFilePath, parameters.posts.dist.name);
+						postsData.push(result);
 
-				}
-				
-				utils.recursiveMkdir(newFilePath);
-				
-				console.log('Creating: ' + newFileName);
-				
-				result.url	= newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
-				
-				var tpl		= ispage ? pageTpl : postTpl,
-					html	= tpl({
-						post: result,
-						globals: {
-							baseurl: ispage ? '../' : '../../../../'
-						}
-					});				
-				
-				fs.writeFile(newFileName, html, function(writeError){
-					if( writeError )
-						throw writeError;
+					} else {
+
+						newFilePath = path.join(parameters.dist, filename);
+						newFileName = path.join(newFilePath, parameters.posts.dist.name);
+
+					}
+					
+					utils.recursiveMkdir(newFilePath);
+					
+					console.log('Creating: ' + newFileName);
+					
+					result.url	= newFileName.replace( path.normalize(parameters.dist), '' ).replace(/\\/g, '/');
+					
+					var tpl		= ispage ? pageTpl : postTpl,
+						html	= tpl({
+							post: result,
+							globals: {
+								baseurl: ispage ? '../' : '../../../../'
+							}
+						});				
+					
+					fs.writeFile(newFileName, html, function(writeError){
+						if( writeError )
+							throw writeError;
+					});
+					
+					resolve();
 				});
 				
-				/**
-				 * Temporary my ass * solution for this callback hell
-				 * For create the home/index file, we must all posts data
-				 */
-				if( counter >= len )
-					createHome(postsData);
-				
-				counter++;
 			});
-			
 		});
+		
+		return promise;
 	};
 
 	function buildPosts(files){
-		
-		len = files.length;
-		
-		files.forEach(function(file) {
-		
-			makePost(path.join(parameters.posts.source, file), len);
+		var p = [];
+
+		return new Promise(function(resolve){
 			
+			files.forEach(function(file) {
+				p.push(makePost(path.join(parameters.posts.source, file)));			
+			});
+	
+			Promise.all(p).then(function() {
+				resolve();
+			});
 		});
-		
 	};
 
-	parameters.template.static.forEach(function(current){
-		ncp(path.join(clientpath, parameters.template.path, current), path.join(clientpath, parameters.dist, current));
-	});
+	
 
 	/**
 	 * Reads the posts files, and make the distribution post file
 	 */
 	readDir(parameters.posts.source)
 		.then(buildPosts)
+		.then(createHome)
+		.then(function() {
+			parameters.template.static.forEach(function(current){
+				ncp(path.join(clientpath, parameters.template.path, current), path.join(clientpath, parameters.dist, current));
+			});				
+		})
 		.catch(console.log);
 }
