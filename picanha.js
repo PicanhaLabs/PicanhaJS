@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var fs = require('fs'),
 	fm = require('front-matter'),
 	marked = require('marked'),

@@ -1,5 +1,5 @@
 {
-  "name": "Static",
+  "name": "PicanhaJS",
   "version": "0.0.1",
   "description": "Lite Static Generator",
   "main": "index.js",
@@ -24,7 +24,11 @@
     "Site",
     "Generator"
   ],
-  "author": "Gabriel Alan",
+  "bin": {
+    "picanha": "picanha.js"
+  },
+  "preferGlobal": "true",
+  "author": "Picanha Labs",
   "license": "MIT License",
   "bugs": {
     "url": "https://github.com/gabrielalan/static/issues"
