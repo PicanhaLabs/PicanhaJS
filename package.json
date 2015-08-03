@@ -1,8 +1,7 @@
 {
   "name": "picanhajs",
-  "version": "0.0.91",
+  "version": "0.0.92",
   "description": "Site Static Generator",
-  "main": "index.js",
   "dependencies": {
     "front-matter": "^1.0.0",
     "handlebars": "^3.0.3",
