@@ -1,7 +1,7 @@
 {
-  "name": "PicanhaJS",
-  "version": "0.0.1",
-  "description": "Lite Static Generator",
+  "name": "picanhajs",
+  "version": "0.0.9",
+  "description": "Site Static Generator",
   "main": "index.js",
   "dependencies": {
     "front-matter": "^1.0.0",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gabrielalan/static.git"
+    "url": "https://github.com/PicanhaLabs/Picanha.git"
   },
   "keywords": [
     "Static",
@@ -31,7 +31,7 @@
   "author": "Picanha Labs",
   "license": "MIT License",
   "bugs": {
-    "url": "https://github.com/gabrielalan/static/issues"
+    "url": "https://github.com/PicanhaLabs/Picanha/issues"
   },
-  "homepage": "https://github.com/gabrielalan/static"
+  "homepage": "https://github.com/PicanhaLabs"
 }
