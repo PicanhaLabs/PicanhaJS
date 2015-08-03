@@ -42,7 +42,10 @@ function createHome(posts) {
 		var tpl = handlebars.compile(data);
 		
 		var result = tpl({
-			posts: posts
+			posts: posts,
+			globals: {
+				baseurl: ''
+			}
 		});
 		
 		console.log('Creating the home index.html');
@@ -104,7 +107,9 @@ function makePost( filePath, len, tpl ){
 			
 			var html = tpl({
 				post: result,
-				globals: parameters.template.globals
+				globals: {
+					baseurl: '../../../../'
+				}
 			});				
 			
 			fs.writeFile(newFileName, html, function(writeError){
