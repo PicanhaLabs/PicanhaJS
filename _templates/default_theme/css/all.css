@@ -83,7 +83,7 @@ header {
 	font-size: 1.1em;
 }
 
-.last-posts-post-title {
+.last-posts-post-title, .last-posts-post-title a {
 	color: #900;
 	font-size: 1.3em;
 }
