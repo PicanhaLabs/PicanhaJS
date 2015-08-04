@@ -9,7 +9,7 @@ npm install -g picanhajs
 ```
 mkdir yourpath
 cd yourpath
-picanha create
+picanha beginbbq
 ```
 
 ## Generate

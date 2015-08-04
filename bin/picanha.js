@@ -10,7 +10,7 @@ var fs 			= require('fs'),
 	clientpath	= process.cwd(),
 	libpath 	= process.mainModule.paths[2] + '/picanhajs';
 
-if (command[0] === 'create') {
+if (command[0] === 'beginbbq') {
 	console.log('Preparing BBQ.\n');
 	
 	var postsPormise = new Promise(function(resolve) {
