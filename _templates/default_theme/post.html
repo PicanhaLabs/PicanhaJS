@@ -9,16 +9,16 @@
 	
 	{{#post}}
 	
-	<div class="post-header">
-		<h1>{{title}}</h1>
-		<h2>Author: {{author}}</h2>
-		<h3>Categories: {{categories}}</h3>
-		<h3>Tags: {{tags}}</h3>
-	</div>
-	
-	<div class="post-content">
-		{{{body}}}
-	</div>
+	<article class="wrapper post">
+		<div class="post-header">
+			<h2 class="post-title">{{title}}</h2>
+			<h3>Author: {{author}}</h3>
+		</div>
+		
+		<div class="post-content">
+			{{{body}}}
+		</div>
+	</article>
 	
 	{{/post}}
 </body>

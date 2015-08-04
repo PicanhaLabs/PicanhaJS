@@ -1,12 +1,159 @@
 * {
+	color: #333;
+	font-size: 16px;
 	margin: 0px;
 	padding: 0px;
 }
 
 body, html {
-	font-family: Arial;
+	background: #f3f3f3;
+	font-family: Helvetica, Arial, Sans;
 }
 
 h1, h2, h3, h4, h5 {
 	margin-bottom: 10px;
+}
+
+.wrapper {
+	margin-left: auto;
+	margin-right: auto;
+	width: 1024px;
+}
+
+.clearfix:after { 
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0; 
+}
+
+
+header {
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 20px;
+	padding: 20px 0 0;
+}
+
+.header-blog-title {
+	color: #666;
+	display: inline-block;
+	padding: 0 20px 0 0;
+}
+
+.header-blog-title a {
+	color: #666 !important;
+	display: block;
+	font-size: 2em;
+	height: 100%;
+	outline: none;
+	text-decoration: none;
+	width: 100%;
+}
+
+.header-menu {
+	margin-top: 10px;
+}
+.header-menu a {
+	color: #666;
+	display: block;
+	float: left;
+	font-weight: bold;
+	padding: 20px 30px;
+	outline: none;
+	text-decoration: none;
+	translate: all 200ms linear;
+}
+.header-menu a:first-child {
+	padding-left: 0;
+}
+
+.header-menu a:focus,
+.header-menu a:hover {
+	color: #900;
+}
+
+.last-posts-post {
+	border-bottom: 1px solid #600;
+	padding: 20px 0;
+}
+
+.last-posts-title {
+	font-size: 1.1em;
+}
+
+.last-posts-post-title {
+	color: #900;
+	font-size: 1.3em;
+}
+
+.last-posts-post-more {
+	color: #666;
+	display: block;
+	float: right;
+	font-size: 0.9em;
+    margin-top: 10px;
+    text-decoration: none;
+	translate: all 200ms linear;
+}
+
+.last-posts-post-more:focus,
+.last-posts-post-more:hover {
+	color: #900;
+}
+
+.last-posts-post-more:after { 
+	content: '\00BB';
+	display: inline-block;
+	margin-left: 8px;
+}
+
+.post-header {
+	border-bottom: 1px dashed #ccc;
+}
+
+.post-title,
+.page-title {
+	color: #900;
+	font-size: 1.8em;
+}
+
+.post-content h1 {
+	font-size: 1.7em;
+}
+.post-content h2 {
+	font-size: 1.6em;
+}
+.post-content h3 {
+	font-size: 1.5em;
+}
+.post-content h4 {
+	font-size: 1.4em;
+}
+.post-content h5 {
+	font-size: 1.3em;
+}
+.post-content h6 {
+	font-size: 1.2em;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+	margin: 20px 0;
+}
+
+.post-content,
+.page-content p {
+	margin: 10px 0;	
+}
+
+.post-content pre {
+	background: #fff;
+    margin: 15px 0;
+	padding: 15px;
 }
