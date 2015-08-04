@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Blog Teste</title>
 	{{> includes}}
@@ -8,13 +8,16 @@
 	{{> header}}
 	
 	<section class="posts">
-	{{#posts}}
-		<div class="post">
-			{{title}}
-			{{{excerpt}}}
-			<a href="{{url}}">read more</a>
+		<div class="wrapper">
+			<h2 class="last-posts-title">Last posts</h2>
+		{{#posts}}
+			<div class="last-posts-post clearfix">
+				<h3 class="last-posts-post-title">{{title}}</h3>
+				{{{excerpt}}}
+				<a href="{{url}}" class="last-posts-post-more">read more</a>
+			</div>
+		{{/posts}}
 		</div>
-	{{/posts}}
 	</section>
 </body>
 </html>
