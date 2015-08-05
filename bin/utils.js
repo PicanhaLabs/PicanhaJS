@@ -1,5 +1,24 @@
-var fs		= require('fs'), 
+var fs		= require('fs'),
+	Promise = require('promise'),
+	ncp 	= require('ncp').ncp,
 	path	= require('path');
+
+/**
+ * Recursive copy that returns promise
+ * @param src Source path to copy recursively
+ * @param dest destiny path that source copy will be created
+ * @returns {Promise}
+ */
+exports.recursiveCopy = function (src, dest) {
+	return new Promise(function(resolve) {
+		ncp(src, dest, function(error) {
+			if( error )
+				throw error;
+
+			resolve();
+		});
+	});
+};
 
 /**
  * Register the partials on handlebars
