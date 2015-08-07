@@ -92,6 +92,9 @@ Builder.prototype = {
 		});
 	},
 
+	/**
+	 * Make the post compiling with the passed compiler
+	 */
 	makePost: function( filePath ) {
 		var me = this, newFilePath, newFileName;
 
