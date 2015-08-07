@@ -3,7 +3,13 @@ var fs 			= require('fs'),
 	utils 		= require('./utils'),
 	path 		= require('path');
 
-function Builder() {
+function Builder(config) {
+	var options = config || {};
+
+	this.paths = {
+		lib: options.libpath,	
+		cli: options.clientpath	
+	};
 }
 
 Builder.prototype = {
@@ -17,10 +23,17 @@ Builder.prototype = {
 	templateCompiler: null,
 
 	postCompiler: null,
+	
+	copyFn: function() {},
 
-	postTemplate: null,
+	/**
+	 * Templates that will be used on build
+	 */
+	templates: { post: null, page: null },
 
-	pageTemplate: null,
+	setCopyFn: function(fn) {
+		this.copyFn = fn;
+	},
 
 	setParameters: function(params){
 		this.parameters = params;
@@ -39,23 +52,20 @@ Builder.prototype = {
 	 * This method takes advantage of the object and compiles the default templates
 	 */
 	setTemplateCompiler: function( compiler ){
-		var me = this;
+		var me = this, toCompile = ['post', 'page'];
 
 		me.templateCompiler = compiler;
 
-		fs.readFile(path.join(this.parameters.template.path, 'post.html'), 'utf8', function(error, data){
-			if( error )
-				throw error;
-
-			me.postTemplate = me.templateCompiler(data);
-		});
-
-
-		fs.readFile(path.join(this.parameters.template.path, 'page.html'), 'utf8', function(error, data){
-			if( error )
-				throw error;
-			
-			me.postTemplate = me.templateCompiler(data);
+		toCompile.forEach(function(current){
+			(function(name) {
+				fs.readFile(path.join(me.parameters.template.path, name + '.html'), 'utf8', function(error, data){
+					if( error ) {
+						throw error;
+					}
+		
+					me.templates[name] = me.templateCompiler(data);
+				});
+			})(current);
 		});
 	},
 
@@ -96,7 +106,7 @@ Builder.prototype = {
 	 * Make the post compiling with the passed compiler
 	 */
 	makePost: function( filePath ) {
-		var me = this, newFilePath, newFileName;
+		var me = this, newFileName;
 
 		return new Promise(function(resolve) {
 
@@ -105,12 +115,14 @@ Builder.prototype = {
 				if( stats.isDirectory() )
 					return true;
 					
-				if( statsError )
+				if( statsError ) {
 					throw statsError;
+				}
 					
 				fs.readFile(filePath, 'utf8', function(fileErr, data){
-					if (fileErr) 
+					if (fileErr) {
 						throw fileErr;
+					}
 					
 					var content		= me.frontMatterCompiler(data),
 						filename	= path.basename(filePath).split('.')[0],
@@ -121,16 +133,16 @@ Builder.prototype = {
 					result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
 					if( !ispage ) {
-						me.makePostPath(filename, stats);
+						newFileName = me.makePostPath(filename, stats);
 					} else {
-						me.makePagePath(filename, stats);
+						newFileName = me.makePagePath(filename, stats);
 					}
 					
 					console.log('\x1b[36mCreating: \x1b[0m' + newFileName);
 					
 					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
 					
-					var tpl		= ispage ? me.pageTemplate : me.postTemplate,
+					var tpl		= ispage ? me.templates.page : me.templates.post,
 						html	= tpl({
 							post: result,
 							globals: {
@@ -139,8 +151,9 @@ Builder.prototype = {
 						});				
 					
 					fs.writeFile(newFileName, html, function(writeError){
-						if( writeError )
+						if( writeError ) {
 							throw writeError;
+						}
 					});
 					
 					resolve();
@@ -154,7 +167,7 @@ Builder.prototype = {
 	 * Mount and create the post path (if it does not exist)
 	 */
 	makePostPath: function(filename, stats) {
-		var me = this;
+		var me = this, newFilePath, newFileName;
 
 		newFilePath = me.parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
 		newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
@@ -174,7 +187,7 @@ Builder.prototype = {
 	 * Mount and create the page path (if it does not exist)
 	 */
 	makePagePath: function(filename, status) {
-		var me = this;
+		var me = this, newFilePath, newFileName;
 
 		newFilePath = path.join(me.parameters.dist, filename);
 		newFileName = path.join(newFilePath, me.parameters.posts.dist.name);
@@ -190,8 +203,9 @@ Builder.prototype = {
 		return new Promise(function(resolve, reject){
 			fs.readFile(path.join(me.parameters.template.path, me.parameters.template.home), 'utf8', function(fileErr, data){
 				
-				if( fileErr )
+				if( fileErr ) {
 					throw fileErr;
+				}
 				
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
@@ -204,8 +218,9 @@ Builder.prototype = {
 				console.log('\x1b[36mCreating:\x1b[0m home');
 				
 				fs.writeFile(path.join(me.parameters.dist, 'index.html'), result, function(writeError){
-					if( writeError )
+					if( writeError ) {
 						throw writeError;
+					}
 				});
 
 				resolve();
@@ -221,7 +236,10 @@ Builder.prototype = {
 			.then(me.createHome.bind(me))
 			.then(function() {
 				me.parameters.template.static.forEach(function(current){
-					ncp(path.join(clientpath, me.parameters.template.path, current), path.join(clientpath, me.parameters.dist, current));
+					me.copyFn(
+						path.join(me.paths.cli, me.parameters.template.path, current), 
+						path.join(me.paths.cli, me.parameters.dist, current)
+					);
 				});				
 			})
 			.catch(console.log);

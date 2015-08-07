@@ -45,11 +45,13 @@ if (cmd[0] === 'beginbbq') {
 		}
 	});
 
-	var builder = new Builder();
+	var builder = new Builder({ libpath: libpath, clientpath: clientpath });
 
 	builder.setParameters(parameters);
 
 	builder.setFrontMatterCompiler(fm);
+	
+	builder.setCopyFn(ncp);
 
 	builder.setPostCompiler(marked);
 
