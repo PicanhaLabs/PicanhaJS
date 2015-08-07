@@ -4,7 +4,7 @@ process.title	= 'picanha';
 
 var fs 			= require('fs'),
 	cmd		 	= process.argv.slice(2);
-	Command		= require('./command'),
+	Creator		= require('./creator'),
 	path 		= require('path'),
 	Promise 	= require('promise'),
 	utils		= require('./utils'),
@@ -12,11 +12,10 @@ var fs 			= require('fs'),
 	clientpath	= process.cwd(),
 	libpath 	= process.mainModule.paths[2] + '/picanhajs';
 
-var commander = new Command({ libpath: libpath, clientpath: clientpath });
-
 if (cmd[0] === 'beginbbq') {
 
-	commander.create(utils.recursiveCopy);
+	var creator = new Creator({ libpath: libpath, clientpath: clientpath });
+	creator.create(utils.recursiveCopy);
 
 } else {
 	

@@ -1,16 +1,16 @@
 var Promise 	= require('promise'),
 	path 		= require('path');
 
-function Command( config ) {
+function Creator( config ) {
+	var options = config || {};
+
 	this.paths = {
-		lib: config.libpath,	
-		cli: config.clientpath	
+		lib: options.libpath,	
+		cli: options.clientpath	
 	};
 }
 
-Command.prototype = {
-	
-	builder: null,
+Creator.prototype = {
 
 	/**
 	 * Default paths that will be copied on create
@@ -20,7 +20,7 @@ Command.prototype = {
 	},
 	
 	/**
-	 * Method to beginbbq command
+	 * Method to beginbbq Creator
 	 */
 	create: function( copyFn ) {
 		var me = this, promises = [];
@@ -37,4 +37,4 @@ Command.prototype = {
 	}
 };
 
-module.exports = Command; 
+module.exports = Creator; 

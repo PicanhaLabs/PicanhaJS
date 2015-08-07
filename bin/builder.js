@@ -18,13 +18,9 @@ Builder.prototype = {
 
 	postCompiler: null,
 
-	get postTemplate() {
-		return this.templateCompiler(fs.readFileSync(path.join(this.parameters.template.path, 'post.html'), {encoding: 'utf8'}));
-	},
+	postTemplate: null,
 
-	get pageTemplate() {
-		return this.templateCompiler(fs.readFileSync(path.join(this.parameters.template.path, 'page.html'), {encoding: 'utf8'}));
-	},
+	pageTemplate: null,
 
 	setParameters: function(params){
 		this.parameters = params;
@@ -38,10 +34,34 @@ Builder.prototype = {
 		this.postCompiler = compiler;
 	},
 
+	/**
+	 * Setter of template compiler
+	 * This method takes advantage of the object and compiles the default templates
+	 */
 	setTemplateCompiler: function( compiler ){
-		this.templateCompiler = compiler;
+		var me = this;
+
+		me.templateCompiler = compiler;
+
+		fs.readFile(path.join(this.parameters.template.path, 'post.html'), 'utf8', function(error, data){
+			if( error )
+				throw error;
+
+			me.postTemplate = me.templateCompiler(data);
+		});
+
+
+		fs.readFile(path.join(this.parameters.template.path, 'page.html'), 'utf8', function(error, data){
+			if( error )
+				throw error;
+			
+			me.postTemplate = me.templateCompiler(data);
+		});
 	},
 
+	/**
+	 * Get the post files and return promise
+	 */
 	getFiles: function() {
 		var me = this;
 
@@ -98,26 +118,10 @@ Builder.prototype = {
 					result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
 					if( !ispage ) {
-
-						newFilePath = me.parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
-						newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
-						newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
-						newFilePath = newFilePath.replace(':name', filename);
-						
-						newFilePath = path.join(me.parameters.dist, newFilePath);
-						
-						newFileName = path.join(newFilePath, me.parameters.posts.dist.name);
-
-						me.postsData.push(result);
-
+						me.makePostPath(filename, stats);
 					} else {
-
-						newFilePath = path.join(me.parameters.dist, filename);
-						newFileName = path.join(newFilePath, me.parameters.posts.dist.name);
-
+						me.makePagePath(filename, stats);
 					}
-					
-					utils.recursiveMkdir(newFilePath);
 					
 					console.log('\x1b[36mCreating: \x1b[0m' + newFileName);
 					
@@ -141,6 +145,40 @@ Builder.prototype = {
 				
 			});
 		});
+	},
+
+	/**
+	 * Mount and create the post path (if it does not exist)
+	 */
+	makePostPath: function(filename, stats) {
+		var me = this;
+
+		newFilePath = me.parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
+		newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
+		newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
+		newFilePath = newFilePath.replace(':name', filename);
+		
+		newFilePath = path.join(me.parameters.dist, newFilePath);
+		
+		newFileName = path.join(newFilePath, me.parameters.posts.dist.name);
+
+		utils.recursiveMkdir(newFilePath);
+
+		return newFileName;
+	},
+
+	/**
+	 * Mount and create the page path (if it does not exist)
+	 */
+	makePagePath: function(filename, status) {
+		var me = this;
+
+		newFilePath = path.join(me.parameters.dist, filename);
+		newFileName = path.join(newFilePath, me.parameters.posts.dist.name);
+
+		utils.recursiveMkdir(newFilePath);
+
+		return newFileName;
 	},
 
 	createHome: function() {
