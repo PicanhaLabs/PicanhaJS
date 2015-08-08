@@ -22,17 +22,19 @@ Creator.prototype = {
 	/**
 	 * Method to beginbbq Creator
 	 */
-	create: function( copyFn ) {
+	create: function( copyFn, verbose ) {
 		var me = this, promises = [];
 
-		console.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
+		if( verbose )
+			console.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
 
 		me.toCopy.forEach(function(current) {
 			promises.push(copyFn( path.join(me.paths.lib, current), path.join(me.paths.cli, current) ));
 		});
 	
 		Promise.all(promises).then(function() {
-			console.log('\x1b[36mYou can start cooking!\x1b[0m');
+			if( verbose )
+				console.log('\x1b[36mYou can start cooking!\x1b[0m');
 		});
 	}
 };

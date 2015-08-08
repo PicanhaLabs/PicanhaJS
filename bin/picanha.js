@@ -15,7 +15,9 @@ var fs 			= require('fs'),
 if (cmd[0] === 'beginbbq') {
 
 	var creator = new Creator({ libpath: libpath, clientpath: clientpath });
-	creator.create(utils.recursiveCopy);
+	
+	/* second param is "verbose" */
+	creator.create(utils.recursiveCopy, true);
 
 } else {
 	
