@@ -34,8 +34,6 @@ if (cmd[0] === 'beginbbq') {
 		parameters		= defaultparams;
 	}
 
-	console.log(parameters);
-
 	utils.registerPartials( handlebars, path.join(parameters.template.path, parameters.template.partials) );
 
 	/**
