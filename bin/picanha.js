@@ -19,12 +19,22 @@ if (cmd[0] === 'beginbbq') {
 
 } else {
 	
-	var fm			= require('front-matter'),
-		marked		= require('marked'),
-		highlight	= require('highlight.js'),
-		handlebars	= require('handlebars'),
-		Builder		= require('./builder'),
-		parameters	= require('./picanha.json');
+	var fm				= require('front-matter'),
+		marked			= require('marked'),
+		highlight		= require('highlight.js'),
+		handlebars		= require('handlebars'),
+		Builder			= require('./builder'),
+		defaultparams	= require('./picanha.json'),
+		customParams, parameters;
+
+	try {
+		customParams	= require(clientpath + '/picanha.json');
+		parameters		= utils.extend(defaultparams, customParams);
+	} catch(e) {
+		parameters		= defaultparams;
+	}
+
+	console.log(parameters);
 
 	utils.registerPartials( handlebars, path.join(parameters.template.path, parameters.template.partials) );
 

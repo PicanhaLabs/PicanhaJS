@@ -77,3 +77,18 @@ exports.padNumber			= function(num, size) {
 
 	return s;
 };
+
+function extend( defaultobj, customobj ) {
+	
+	for (var prop in customobj) {
+		if (Object.prototype.toString.call(customobj[prop]) == '[object Object]' 
+			&& defaultobj.hasOwnProperty(prop))
+			defaultobj[prop] = extend(defaultobj[prop], customobj[prop]);
+		else
+			defaultobj[prop]  = customobj[prop];
+	}
+
+	return defaultobj
+}
+
+exports.extend = extend;
