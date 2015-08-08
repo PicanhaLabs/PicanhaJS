@@ -15,7 +15,7 @@ exports.recursiveCopy = function (src, dest) {
 			if( error )
 				throw error;
 
-			resolve();
+			resolve(dest);
 		});
 	});
 };
