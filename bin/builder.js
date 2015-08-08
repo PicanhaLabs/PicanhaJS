@@ -106,7 +106,7 @@ Builder.prototype = {
 	 * Make the post compiling with the passed compiler
 	 */
 	makePost: function( filePath ) {
-		var me = this, newFileName;
+		var me = this, newFileName, globals, content, filename, result, ispage, page;
 
 		return new Promise(function(resolve) {
 
@@ -124,12 +124,18 @@ Builder.prototype = {
 						throw fileErr;
 					}
 					
-					var content		= me.frontMatterCompiler(data),
-						filename	= path.basename(filePath).split('.')[0],
-						result		= content.attributes,
-						ispage		= result.template === 'page';
+					content		= me.frontMatterCompiler(data);
+					filename	= path.basename(filePath).split('.')[0];
+					result		= content.attributes;
+					ispage		= result.template === 'page';
+					globals		= {
+						baseurl: ispage ? '../' : '../../../../'
+					};
 						
-					result.body		= me.postCompiler(content.body);
+					page = me.templateCompiler( me.postCompiler(content.body) );
+						
+					result.body		= page({ globals: globals });
+					
 					result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
 					if( !ispage ) {
@@ -142,12 +148,14 @@ Builder.prototype = {
 					
 					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
 					
+					if( !ispage ) {
+						me.postsData.push(result);
+					}
+					
 					var tpl		= ispage ? me.templates.page : me.templates.post,
 						html	= tpl({
 							post: result,
-							globals: {
-								baseurl: ispage ? '../' : '../../../../'
-							}
+							globals: globals
 						});				
 					
 					fs.writeFile(newFileName, html, function(writeError){
