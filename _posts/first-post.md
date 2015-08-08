@@ -3,7 +3,7 @@ title: First post
 author: PicanhaLabs
 categories: cat1, cat2
 tags: tag1, tag2
-banner: pic01.jpg
+banner: img/post/pic01.jpg
 excerpt: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis sunt magni sapiente voluptatum, ea sit, tempore excepturi fuga ipsa voluptate, dolores tenetur placeat dolore asperiores cupiditate. Voluptate recusandae dolores laborum.
 ---
 
