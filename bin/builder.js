@@ -15,6 +15,8 @@ function Builder(config) {
 Builder.prototype = {
 	
 	postsData: [],
+	
+	firstPost: null,
 
 	parameters: {},
 
@@ -149,7 +151,10 @@ Builder.prototype = {
 					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
 					
 					if( !ispage ) {
-						me.postsData.push(result);
+						if( !me.firstPost )
+							me.firstPost = result;
+						else
+							me.postsData.push(result);
 					}
 					
 					var tpl		= ispage ? me.templates.page : me.templates.post,
@@ -218,6 +223,7 @@ Builder.prototype = {
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
 						posts	: me.postsData,
+						first	: me.firstPost,
 						globals : {
 							baseurl: ''
 						}

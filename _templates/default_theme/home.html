@@ -10,6 +10,16 @@
 	<section class="posts">
 		<div class="wrapper">
 			<h2 class="last-posts-title">Last posts</h2>
+		{{#first}}
+			<div class="last-posts-post clearfix">
+				{{#banner}}
+				<img src="{{globals.baseurl}}{{.}}" alt="{{../title}}" />
+				{{/banner}}
+				<h3 class="last-posts-post-title"><a href="{{url}}">{{title}}</a></h3>
+				{{{excerpt}}}
+				<a href="{{url}}" class="last-posts-post-more">read more</a>
+			</div>
+		{{/first}}
 		{{#posts}}
 			<div class="last-posts-post clearfix">
 				{{#banner}}
