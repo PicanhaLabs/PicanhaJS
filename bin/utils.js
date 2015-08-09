@@ -15,7 +15,7 @@ exports.recursiveCopy = function (src, dest) {
 			if( error )
 				throw error;
 
-			resolve(dest);
+			resolve();
 		});
 	});
 };
@@ -89,6 +89,29 @@ function extend( defaultobj, customobj ) {
 	}
 
 	return defaultobj
-}
+};
 
 exports.extend = extend;
+
+exports.formatData = function(date) {
+	var monthNames = [
+		"January", "February", "March",
+		"April", "May", "June", "July",
+		"August", "September", "October",
+		"November", "December"
+	];
+
+	var day			= date.getDate(),
+		monthIndex	= date.getMonth(),
+		year		= date.getFullYear(),
+		ordinalDay	= day.toString().slice(-1);
+
+	if (parseInt(ordinalDay) === 1)
+		ordinalDay += 'st';
+	else if (parseInt(ordinalDay) === 2)
+		ordinalDay += 'nd';
+	else
+		ordinalDay += 'th';
+
+	return monthNames[monthIndex] + ' ' + ordinalDay + ', ' + year;
+}

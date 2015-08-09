@@ -15,8 +15,6 @@ function Builder(config) {
 Builder.prototype = {
 	
 	postsData: [],
-	
-	firstPost: null,
 
 	parameters: {},
 
@@ -133,6 +131,10 @@ Builder.prototype = {
 					globals		= {
 						baseurl: ispage ? '../' : '../../../../'
 					};
+
+					result.creationdate = stats.ctime.getTime();
+
+					result.creation = utils.formatData(new Date(result.creationdate));
 						
 					page = me.templateCompiler( me.postCompiler(content.body) );
 						
@@ -151,10 +153,7 @@ Builder.prototype = {
 					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
 					
 					if( !ispage ) {
-						if( !me.firstPost )
-							me.firstPost = result;
-						else
-							me.postsData.push(result);
+						me.postsData.push(result);
 					}
 					
 					var tpl		= ispage ? me.templates.page : me.templates.post,
@@ -220,10 +219,14 @@ Builder.prototype = {
 					throw fileErr;
 				}
 				
+				me.postsData = me.postsData.sort(function(post1, post2) {
+					return post2.creationdate - post1.creationdate;
+				});
+
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
+						last	: me.postsData.shift(),
 						posts	: me.postsData,
-						first	: me.firstPost,
 						globals : {
 							baseurl: ''
 						}
