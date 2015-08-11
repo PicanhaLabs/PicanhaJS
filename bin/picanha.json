@@ -10,9 +10,9 @@
 	"template"	: {
 		"path"		: "./_templates/default_theme/",
 		"home"		: "home.html",
-		"post"		: "post.html",
 		"partials"	: "partials",
 		"static"	: ["css", "js", "img"],
+		"layouts"	: ["post", "page", "authors"],
 		"globals"	: {
 			"baseurl"	: "http://static.local/_build/"
 		}

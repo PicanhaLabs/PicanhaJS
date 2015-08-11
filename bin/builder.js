@@ -53,7 +53,7 @@ Builder.prototype = {
 	 * This method takes advantage of the object and compiles the default templates
 	 */
 	setTemplateCompiler: function( compiler ){
-		var me = this, toCompile = ['post', 'page', 'authors'];
+		var me = this, toCompile = me.parameters.template.layouts;
 
 		me.templateCompiler = compiler;
 
@@ -127,7 +127,7 @@ Builder.prototype = {
 					
 					content		= me.frontMatterCompiler(data);
 					result		= content.attributes;
-					ispage		= result.template !== 'post';
+					ispage		= result.template !== 'post' && result.template;
 					globals		= {
 						baseurl: ispage ? '../' : '../../../../',
 						authors: me.authors
