@@ -2,7 +2,8 @@ var fs 			= require('fs'),
 	Promise 	= require('promise'),
 	utils 		= require('./utils'),
 	path 		= require('path'),
-	crypto 		= require('crypto');
+	crypto 		= require('crypto'),
+	moment		= require('moment');
 
 function Builder(config) {
 	var options = config || {};
@@ -133,9 +134,14 @@ Builder.prototype = {
 						authors: me.authors
 					};
 
+					if( !result.date )
+						result.date = moment();
+					else
+						result.date = moment(result.date, me.parameters.posts.dateformat);
+
 					result.author	= me.findAuthor(result.author);
 
-					result.creationdate = stats.ctime.getTime();
+					result.creationdate = result.date.valueOf();
 
 					result.creation = utils.formatData(new Date(result.creationdate));
 						
@@ -149,9 +155,9 @@ Builder.prototype = {
 					filename	= path.basename(filePath).split('.')[0];
 					
 					if( !ispage ) {
-						newFileName = me.makePostPath(filename, stats);
+						newFileName = me.makePostPath(filename, result.date);
 					} else {
-						newFileName = me.makePagePath(filename, stats);
+						newFileName = me.makePagePath(filename, result.date);
 					}
 
 					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
@@ -185,12 +191,12 @@ Builder.prototype = {
 	/**
 	 * Mount and create the post path (if it does not exist)
 	 */
-	makePostPath: function(filename, stats) {
+	makePostPath: function(filename, momentDate) {
 		var me = this, newFilePath, newFileName;
 
-		newFilePath = me.parameters.posts.dist.path.replace(':year', stats.ctime.getFullYear());
-		newFilePath = newFilePath.replace(':month', utils.padNumber(stats.ctime.getMonth() + 1, 2));
-		newFilePath = newFilePath.replace(':day', utils.padNumber(stats.ctime.getDate(), 2));
+		newFilePath = me.parameters.posts.dist.path.replace(':year', momentDate.year());
+		newFilePath = newFilePath.replace(':month', utils.padNumber(momentDate.month() + 1, 2));
+		newFilePath = newFilePath.replace(':day', utils.padNumber(momentDate.date(), 2));
 		newFilePath = newFilePath.replace(':name', filename);
 		
 		newFilePath = path.join(me.parameters.dist, newFilePath);

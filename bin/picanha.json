@@ -1,6 +1,7 @@
 {
 	"dist"		: "./_build/",
 	"posts"		: {
+		"dateformat": "DD/MM/YYYY",
 		"dist"		: { 
 			"path"		: ":year/:month/:day/:name/",
 			"name"		: "index.html"
@@ -23,5 +24,12 @@
 		"medium"	: 100,
 		"large"		: 150,
 		"xlarge"	: 200 
-	}
+	},
+	"authors" : [
+		{
+			"name" 		: "PicanhaLabs",
+			"email" 	: "PicanhaLabs",
+			"github"	: "https://github.com/PicanhaLabs"
+		}
+	]
 }

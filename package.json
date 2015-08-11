@@ -16,6 +16,7 @@
     "handlebars": "^3.0.3",
     "highlight.js": "^8.7.0",
     "marked": "^0.3.4",
+    "moment": "^2.10.6",
     "ncp": "^2.0.0",
     "promise": "^7.0.3"
   },
