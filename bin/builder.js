@@ -253,12 +253,12 @@ Builder.prototype = {
 
 	createAuthors : function() {
 		var me		= this,
-			md5		= crypto.createHash('md5'),
 			hash;
 		
 		me.authors	= me.parameters.authors || [];
 
 		me.authors.forEach(function(el) {
+			var md5		= crypto.createHash('md5');
 			hash = md5.update(el.email).digest("hex");
 
 			for (var size in me.parameters.defaultAuthorSizes) {
