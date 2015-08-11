@@ -53,7 +53,7 @@ Builder.prototype = {
 	 * This method takes advantage of the object and compiles the default templates
 	 */
 	setTemplateCompiler: function( compiler ){
-		var me = this, toCompile = ['post', 'page'];
+		var me = this, toCompile = ['post', 'page', 'authors'];
 
 		me.templateCompiler = compiler;
 
@@ -127,9 +127,10 @@ Builder.prototype = {
 					
 					content		= me.frontMatterCompiler(data);
 					result		= content.attributes;
-					ispage		= result.template === 'page';
+					ispage		= result.template !== 'post';
 					globals		= {
-						baseurl: ispage ? '../' : '../../../../'
+						baseurl: ispage ? '../' : '../../../../',
+						authors: me.authors
 					};
 
 					result.author	= me.findAuthor(result.author);
@@ -162,7 +163,7 @@ Builder.prototype = {
 						me.postsData.push(result);
 					}
 					
-					var tpl		= ispage ? me.templates.page : me.templates.post,
+					var tpl		= !ispage ? me.templates.post : me.templates[result.template],
 						html	= tpl({
 							post: result,
 							globals: globals
