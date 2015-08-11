@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for bin\utils.js</title>
+    <title>Code coverage report for bin/utils.js</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../prettify.css">
     <link rel="stylesheet" href="../base.css">
@@ -12,13 +12,13 @@
     </style>
 </head>
 <body>
-<div class="header high">
-    <h1>Code coverage report for <span class="entity">bin\utils.js</span></h1>
+<div class="header medium">
+    <h1>Code coverage report for <span class="entity">bin/utils.js</span></h1>
     <h2>
-        Statements: <span class="metric">91.89% <small>(34 / 37)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Branches: <span class="metric">64.29% <small>(9 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Functions: <span class="metric">100% <small>(11 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Lines: <span class="metric">91.89% <small>(34 / 37)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">76.09% <small>(35 / 46)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">50% <small>(9 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">91.67% <small>(11 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">76.09% <small>(35 / 46)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">bin/</a> &#187; utils.js</div>
@@ -118,7 +118,30 @@
 91
 92
 93
-94</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -153,13 +176,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -211,7 +234,30 @@
 <span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span></td><td class="text"><pre class="prettyprint lang-js">var fs		= require('fs'),
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var fs		= require('fs'),
 	Promise = require('promise'),
 	ncp 	= require('ncp').ncp,
 	path	= require('path');
@@ -302,14 +348,37 @@ function extend( defaultobj, customobj ) {
 	}
 &nbsp;
 	return defaultobj
-}
+};
 &nbsp;
-exports.extend = extend;</pre></td></tr>
+exports.extend = extend;
+&nbsp;
+exports.formatData = <span class="fstat-no" title="function not covered" >function(date) {</span>
+<span class="cstat-no" title="statement not covered" >	var monthNames = [</span>
+		"January", "February", "March",
+		"April", "May", "June", "July",
+		"August", "September", "October",
+		"November", "December"
+	];
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	var day			= date.getDate(),</span>
+		monthIndex	= date.getMonth(),
+		year		= date.getFullYear(),
+		ordinalDay	= day.toString().slice(-1);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	if (parseInt(ordinalDay) === 1)</span>
+<span class="cstat-no" title="statement not covered" >		ordinalDay += 'st';</span>
+	else <span class="cstat-no" title="statement not covered" >if (parseInt(ordinalDay) === 2)</span>
+<span class="cstat-no" title="statement not covered" >		ordinalDay += 'nd';</span>
+	else
+<span class="cstat-no" title="statement not covered" >		ordinalDay += 'th';</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >	return monthNames[monthIndex] + ' ' + ordinalDay + ', ' + year;</span>
+}</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Aug 08 2015 18:21:23 GMT-0300 (Hora oficial do Brasil)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Aug 10 2015 23:20:26 GMT-0300 (BRT)</div>
 </div>
 <script src="../prettify.js"></script>
 <script>

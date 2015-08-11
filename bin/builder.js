@@ -1,7 +1,8 @@
 var fs 			= require('fs'),
 	Promise 	= require('promise'),
 	utils 		= require('./utils'),
-	path 		= require('path');
+	path 		= require('path'),
+	crypto 		= require('crypto');
 
 function Builder(config) {
 	var options = config || {};
@@ -125,12 +126,13 @@ Builder.prototype = {
 					}
 					
 					content		= me.frontMatterCompiler(data);
-					filename	= path.basename(filePath).split('.')[0];
 					result		= content.attributes;
 					ispage		= result.template === 'page';
 					globals		= {
 						baseurl: ispage ? '../' : '../../../../'
 					};
+
+					result.author	= me.findAuthor(result.author);
 
 					result.creationdate = stats.ctime.getTime();
 
@@ -142,16 +144,20 @@ Builder.prototype = {
 					
 					result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
+
+					filename	= path.basename(filePath).split('.')[0];
+					
 					if( !ispage ) {
 						newFileName = me.makePostPath(filename, stats);
 					} else {
 						newFileName = me.makePagePath(filename, stats);
 					}
+
+					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
+
 					
 					console.log('\x1b[36mCreating: \x1b[0m' + newFileName);
-					
-					result.url	= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
-					
+
 					if( !ispage ) {
 						me.postsData.push(result);
 					}
@@ -245,8 +251,53 @@ Builder.prototype = {
 		});
 	},
 
+	createAuthors : function() {
+		var me		= this,
+			md5		= crypto.createHash('md5'),
+			hash;
+		
+		me.authors	= me.parameters.authors || [];
+
+		me.authors.forEach(function(el) {
+			hash = md5.update(el.email).digest("hex");
+
+			for (var size in me.parameters.defaultAuthorSizes) {
+				el['pathAvatar-' + size] = 'http://www.gravatar.com/avatar/' + hash + '?d=identicon&s=' + me.parameters.defaultAuthorSizes[size];
+			}
+		});
+	},
+
+	findAuthor : function(email) {
+		var me		= this,
+			result, md5, hash;
+
+		result = me.authors.filter(function(el) {
+			return el.email === email;
+		});
+
+		if (!result.length) {
+			md5				= crypto.createHash('md5');
+			
+			result			= {};
+			result.email	= email;
+			result.name		= email.split('@')[0] || email;
+
+			hash			= md5.update(email).digest("hex");
+
+			for (var size in me.parameters.defaultAuthorSizes) {
+				result['pathAvatar-' + size] = 'http://www.gravatar.com/avatar/' + hash + '?d=identicon&s=' + me.parameters.defaultAuthorSizes[size];
+			}
+		} else {
+			result = result[0];
+		}
+
+		return result;
+	},
+
 	execute: function() {
 		var me = this;
+
+		me.createAuthors();
 
 		me.getFiles()
 			.then(me.buildPosts.bind(me))

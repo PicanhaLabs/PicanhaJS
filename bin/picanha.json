@@ -16,5 +16,12 @@
 		"globals"	: {
 			"baseurl"	: "http://static.local/_build/"
 		}
+	},
+	"defaultAuthorSizes" : {
+		"xsmall"	: 40,
+		"small"		: 60,
+		"medium"	: 100,
+		"large"		: 150,
+		"xlarge"	: 200 
 	}
 }
