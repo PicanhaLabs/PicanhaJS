@@ -134,10 +134,7 @@ Builder.prototype = {
 						authors: me.authors
 					};
 
-					if( !result.date )
-						result.date = moment();
-					else
-						result.date = moment(result.date, me.parameters.posts.dateformat);
+					result.date = result.date ? moment(result.date, me.parameters.posts.dateformat) : moment();
 
 					result.author	= me.findAuthor(result.author);
 
