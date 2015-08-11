@@ -15,10 +15,10 @@
 <div class="header low">
     <h1>Code coverage report for <span class="entity">bin/builder.js</span></h1>
     <h2>
-        Statements: <span class="metric">17.54% <small>(20 / 114)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">17.39% <small>(20 / 115)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         Branches: <span class="metric">8.82% <small>(3 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         Functions: <span class="metric">27.78% <small>(10 / 36)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Lines: <span class="metric">17.54% <small>(20 / 114)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">17.39% <small>(20 / 115)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">bin/</a> &#187; builder.js</div>
@@ -341,7 +341,8 @@
 314
 315
 316
-317</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+317
+318</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -401,13 +402,13 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -418,15 +419,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -475,6 +476,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -598,9 +600,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -712,7 +714,7 @@ Builder.prototype = {
 	 * This method takes advantage of the object and compiles the default templates
 	 */
 	setTemplateCompiler: function( compiler ){
-		var me = this, toCompile = ['post', 'page'];
+		var me = this, toCompile = ['post', 'page', 'authors'];
 &nbsp;
 		me.templateCompiler = compiler;
 &nbsp;
@@ -786,9 +788,10 @@ Builder.prototype = {
 					
 <span class="cstat-no" title="statement not covered" >					content		= me.frontMatterCompiler(data);</span>
 <span class="cstat-no" title="statement not covered" >					result		= content.attributes;</span>
-<span class="cstat-no" title="statement not covered" >					ispage		= result.template === 'page';</span>
+<span class="cstat-no" title="statement not covered" >					ispage		= result.template !== 'post';</span>
 <span class="cstat-no" title="statement not covered" >					globals		= {</span>
-						baseurl: ispage ? '../' : '../../../../'
+						baseurl: ispage ? '../' : '../../../../',
+						authors: me.authors
 					};
 &nbsp;
 <span class="cstat-no" title="statement not covered" >					result.author	= me.findAuthor(result.author);</span>
@@ -821,7 +824,7 @@ Builder.prototype = {
 <span class="cstat-no" title="statement not covered" >						me.postsData.push(result);</span>
 					}
 					
-<span class="cstat-no" title="statement not covered" >					var tpl		= ispage ? me.templates.page : me.templates.post,</span>
+<span class="cstat-no" title="statement not covered" >					var tpl		= !ispage ? me.templates.post : me.templates[result.template],</span>
 						html	= tpl({
 							post: result,
 							globals: globals
@@ -912,12 +915,12 @@ Builder.prototype = {
 &nbsp;
 	createAuthors : <span class="fstat-no" title="function not covered" >function() {</span>
 <span class="cstat-no" title="statement not covered" >		var me		= this,</span>
-			md5		= crypto.createHash('md5'),
 			hash;
 		
 <span class="cstat-no" title="statement not covered" >		me.authors	= me.parameters.authors || [];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >		me.authors.forEach(<span class="fstat-no" title="function not covered" >function(el) {</span></span>
+<span class="cstat-no" title="statement not covered" >			var md5		= crypto.createHash('md5');</span>
 <span class="cstat-no" title="statement not covered" >			hash = md5.update(el.email).digest("hex");</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >			for (var size in me.parameters.defaultAuthorSizes) {</span>
@@ -978,7 +981,7 @@ module.exports = Builder;</pre></td></tr>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Aug 10 2015 23:20:26 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Aug 11 2015 00:28:44 GMT-0300 (BRT)</div>
 </div>
 <script src="../prettify.js"></script>
 <script>
