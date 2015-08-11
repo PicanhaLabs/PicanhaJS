@@ -1,6 +1,6 @@
 {
   "name": "picanhajs",
-  "version": "0.0.994",
+  "version": "0.1.0",
   "description": "Site Static Generator",
   "preferGlobal": "true",
   "author": "Picanha Labs",
