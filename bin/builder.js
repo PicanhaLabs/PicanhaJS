@@ -148,7 +148,6 @@ Builder.prototype = {
 					
 					result.excerpt	= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 
-
 					filename	= path.basename(filePath).split('.')[0];
 					
 					if( !ispage ) {
