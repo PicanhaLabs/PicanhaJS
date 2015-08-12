@@ -125,7 +125,7 @@ Builder.prototype = {
 					if (fileErr) {
 						throw fileErr;
 					}
-					
+										
 					content		= me.frontMatterCompiler(data);
 					result		= content.attributes;
 					ispage		= result.template !== 'post' && result.template;
