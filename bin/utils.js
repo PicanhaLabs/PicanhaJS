@@ -107,11 +107,29 @@ exports.formatData = function(date) {
 		ordinalDay	= day.toString().slice(-1);
 
 	if (parseInt(ordinalDay) === 1)
-		ordinalDay += 'st';
+		ordinalDay = day + 'st';
 	else if (parseInt(ordinalDay) === 2)
-		ordinalDay += 'nd';
+		ordinalDay = day + 'nd';
 	else
-		ordinalDay += 'th';
+		ordinalDay = day + 'th';
 
 	return monthNames[monthIndex] + ' ' + ordinalDay + ', ' + year;
 }
+
+function deleteFolderRecursive(path) {
+	if (fs.existsSync(path)) {
+		
+		fs.readdirSync(path).forEach(function(file, index) {
+			var curPath = path + "/" + file;
+
+			if(fs.lstatSync(curPath).isDirectory())
+				deleteFolderRecursive(curPath);
+			else
+				fs.unlinkSync(curPath);
+		});
+
+		fs.rmdirSync(path);
+	}
+};
+
+exports.deleteFolderRecursive = deleteFolderRecursive;

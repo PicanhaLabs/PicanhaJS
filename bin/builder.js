@@ -302,6 +302,9 @@ Builder.prototype = {
 
 		me.createAuthors();
 
+		console.log('\x1b[36mCleaning\x1b[0m');
+		utils.deleteFolderRecursive(me.parameters.dist);
+
 		me.getFiles()
 			.then(me.buildPosts.bind(me))
 			.then(me.createHome.bind(me))
