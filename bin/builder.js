@@ -236,7 +236,6 @@ Builder.prototype = {
 
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
-						last	: me.postsData.shift(),
 						posts	: me.postsData,
 						globals : {
 							baseurl: ''
