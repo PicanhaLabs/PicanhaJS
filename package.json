@@ -1,7 +1,7 @@
 {
   "name": "picanhajs",
-  "version": "0.1.1",
-  "description": "Site Static Generator",
+  "version": "0.1.2",
+  "description": "A tasty website static generator",
   "preferGlobal": "true",
   "author": "Picanha Labs",
   "license": "MIT License",
@@ -38,6 +38,6 @@
     "picanha": "bin/picanha.js"
   },
   "bugs": {
-    "url": "https://github.com/PicanhaLabs/Picanha/issues"
+    "url": "https://github.com/PicanhaLabs/PicanhaJS/issues"
   }
 }

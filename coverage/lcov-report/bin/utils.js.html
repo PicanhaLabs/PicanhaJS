@@ -15,10 +15,10 @@
 <div class="header medium">
     <h1>Code coverage report for <span class="entity">bin/utils.js</span></h1>
     <h2>
-        Statements: <span class="metric">76.09% <small>(35 / 46)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Branches: <span class="metric">50% <small>(9 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Functions: <span class="metric">91.67% <small>(11 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
-        Lines: <span class="metric">76.09% <small>(35 / 46)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">67.27% <small>(37 / 55)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">40.91% <small>(9 / 22)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">78.57% <small>(11 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">67.27% <small>(37 / 55)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">bin/</a> &#187; utils.js</div>
@@ -141,7 +141,25 @@
 114
 115
 116
-117</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -257,7 +275,25 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var fs		= require('fs'),
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span></td><td class="text"><pre class="prettyprint lang-js">var fs		= require('fs'),
 	Promise = require('promise'),
 	ncp 	= require('ncp').ncp,
 	path	= require('path');
@@ -366,19 +402,37 @@ exports.formatData = <span class="fstat-no" title="function not covered" >functi
 		ordinalDay	= day.toString().slice(-1);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >	if (parseInt(ordinalDay) === 1)</span>
-<span class="cstat-no" title="statement not covered" >		ordinalDay += 'st';</span>
+<span class="cstat-no" title="statement not covered" >		ordinalDay = day + 'st';</span>
 	else <span class="cstat-no" title="statement not covered" >if (parseInt(ordinalDay) === 2)</span>
-<span class="cstat-no" title="statement not covered" >		ordinalDay += 'nd';</span>
+<span class="cstat-no" title="statement not covered" >		ordinalDay = day + 'nd';</span>
 	else
-<span class="cstat-no" title="statement not covered" >		ordinalDay += 'th';</span>
+<span class="cstat-no" title="statement not covered" >		ordinalDay = day + 'th';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >	return monthNames[monthIndex] + ' ' + ordinalDay + ', ' + year;</span>
-}</pre></td></tr>
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function deleteFolderRecursive(path) {</span>
+<span class="cstat-no" title="statement not covered" >	if (fs.existsSync(path)) {</span>
+		
+<span class="cstat-no" title="statement not covered" >		fs.readdirSync(path).forEach(<span class="fstat-no" title="function not covered" >function(file, index) {</span></span>
+<span class="cstat-no" title="statement not covered" >			var curPath = path + "/" + file;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >			if(fs.lstatSync(curPath).isDirectory())</span>
+<span class="cstat-no" title="statement not covered" >				deleteFolderRecursive(curPath);</span>
+			else
+<span class="cstat-no" title="statement not covered" >				fs.unlinkSync(curPath);</span>
+		});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >		fs.rmdirSync(path);</span>
+	}
+};
+&nbsp;
+exports.deleteFolderRecursive = deleteFolderRecursive;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Aug 11 2015 00:28:44 GMT-0300 (BRT)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Aug 18 2015 23:56:03 GMT-0300 (BRT)</div>
 </div>
 <script src="../prettify.js"></script>
 <script>

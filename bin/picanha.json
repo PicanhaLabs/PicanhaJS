@@ -13,7 +13,7 @@
 		"home"		: "home.html",
 		"partials"	: "partials",
 		"static"	: ["css", "js", "img"],
-		"layouts"	: ["post", "page", "authors"],
+		"layouts"	: ["post", "page"],
 		"globals"	: {
 			"baseurl"	: "http://static.local/_build/"
 		}
@@ -28,7 +28,7 @@
 	"authors" : [
 		{
 			"name" 		: "PicanhaLabs",
-			"email" 	: "PicanhaLabs",
+			"email" 	: "grill@picanhalabs.com",
 			"github"	: "https://github.com/PicanhaLabs"
 		}
 	]
