@@ -144,7 +144,7 @@ Builder.prototype = {
 						
 					result.body			= page({ globals: globals });
 					result.excerpt		= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
-
+					result.description = result.excerpt.replace(/<(\/)?.>/gi, '');
 
 					filename			= path.basename(filePath).split('.')[0];
 
