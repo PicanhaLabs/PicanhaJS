@@ -13,8 +13,6 @@ describe('Utils functions', function() {
     after(function(){
         fs.rmdir(path.normalize('./testDir'));
         fs.rmdir(path.normalize('./testDirCopy'));
-        fs.rmdirSync(path.normalize('./testRecursive/RecursiveTest'));
-        fs.rmdir(path.normalize('./testRecursive'));
     });
 	
 	describe('extend', function() {
@@ -37,6 +35,13 @@ describe('Utils functions', function() {
 		});
 	});
 	
+	describe('formatData', function() {
+		it('should format a date on verbose format', function(){
+			var date = new Date(1440339208567);
+			assert.strictEqual(utils.formatData(date), 'August 23th, 2015');
+		});
+	});
+	
 	describe('recursiveMkdir', function() {
 		it('should create recursively an dir', function(){
 			utils.recursiveMkdir(path.normalize('./testRecursive/RecursiveTest'));
@@ -45,9 +50,23 @@ describe('Utils functions', function() {
 		});
 	});
     
+	describe('deleteFolderRecursive', function() {
+		it('should remove recursively an dir', function(){
+			utils.deleteFolderRecursive(path.normalize('./testRecursive'));
+			
+			assert.strictEqual(fs.existsSync(path.normalize('./testRecursive')), false, 'the created path must NOT exist');
+		});
+	});
+	
     describe('recursiveCopy', function() {
+        it('should reject with error iff path doesnt exists', function(done){
+			utils.recursiveCopy('./asdasd', './asdasd1').catch(function(error){
+				done();
+			});
+		});
+			
         it('should copy 1 folder to other place', function(done){
-            utils.recursiveCopy(path.normalize('./testDir'), path.normalize('./testDirCopy')).then(function(d){
+			utils.recursiveCopy(path.normalize('./testDir'), path.normalize('./testDirCopy')).then(function(d){
                 fs.exists(d, function(result){
                    done();
                 });

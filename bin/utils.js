@@ -10,10 +10,12 @@ var fs		= require('fs'),
  * @returns {Promise}
  */
 exports.recursiveCopy = function (src, dest) {
-	return new Promise(function(resolve) {
+	return new Promise(function(resolve, reject) {
 		ncp(src, dest, function(error) {
-			if( error )
-				throw error;
+			if( error ){
+				reject(error);
+				return false;
+			}
 
 			resolve(dest);
 		});
