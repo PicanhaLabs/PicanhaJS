@@ -107,7 +107,10 @@ Builder.prototype = {
 	 * Make the post compiling with the passed compiler
 	 */
 	makePost: function( filePath ) {
-		var me = this, newFileName, globals, content, filename, result, ispage, page, isdraft;
+		var me = this, newFileName, globals = {}, content, filename, result, ispage, page, isdraft;
+
+		for (var glob in me.parameters.template.globals)
+			globals[glob] = me.parameters.template.globals[glob];
 
 		return new Promise(function(resolve) {
 
@@ -130,11 +133,10 @@ Builder.prototype = {
 					result				= content.attributes;
 					ispage				= result.template !== 'post' && result.template;
 					isdraft				= result.draft;
-					globals				= {
-											baseurl : ispage ? '../' : '../../../../',
-											authors : me.authors
-										};
-
+					
+					globals.baseurl		= ispage ? '../' : '../../../../';
+					globals.authors		= me.authors;
+					
 					result.date			= result.date ? moment(result.date, me.parameters.posts.dateformat) : moment();
 					result.author		= me.findAuthor(result.author);
 					result.creationdate = result.date.valueOf();
@@ -144,7 +146,7 @@ Builder.prototype = {
 						
 					result.body			= page({ globals: globals });
 					result.excerpt		= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
-					result.description = result.excerpt.replace(/(<([^>]+)>)/gi, '');
+					result.description	= result.excerpt.replace(/(<([^>]+)>)/gi, '');
 
 					filename			= path.basename(filePath).split('.')[0];
 
@@ -159,7 +161,7 @@ Builder.prototype = {
 						newFileName		= me.makePagePath(filename, result.date);
 
 
-					result.url			= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
+					result.url			= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/').replace('index.html', '');
 
 					
 					console.log('\x1b[36mCreating ' + (isdraft ? 'DRAFT' : '') + ': \x1b[0m' + newFileName);
@@ -234,12 +236,17 @@ Builder.prototype = {
 					return post2.creationdate - post1.creationdate;
 				});
 
+				var globals = {
+					baseurl : ''
+				};
+
+				for (var glob in me.parameters.template.globals)
+					globals[glob] = me.parameters.template.globals[glob];
+
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
 						posts	: me.postsData,
-						globals : {
-							baseurl: ''
-						}
+						globals : globals
 					});
 				
 				console.log('\x1b[36mCreating :\x1b[0m home');

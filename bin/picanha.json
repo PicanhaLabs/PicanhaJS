@@ -14,9 +14,7 @@
 		"partials"	: "partials",
 		"static"	: ["css", "js", "img"],
 		"layouts"	: ["post", "page"],
-		"globals"	: {
-			"baseurl"	: "http://static.local/_build/"
-		}
+		"globals"	: {}
 	},
 	"defaultAuthorSizes" : {
 		"xsmall"	: 40,
