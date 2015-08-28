@@ -193,6 +193,8 @@ describe('Builder', function(){
 			it('should create globals object', function(){
 				instance.setGlobals();
 				assert.isObject(instance.globals);
+				assert.isUndefined(instance.globals.prod);
+				assert.isUndefined(instance.globals.dev);
 			});
 		});
 

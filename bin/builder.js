@@ -122,11 +122,9 @@ Builder.prototype = {
 
 		
 		if (me.cmdOpts[0] === 'dev' && me.globals.dev)
-			for (glob in me.parameters.template.globals.dev)
-				me.globals[glob] = me.parameters.template.globals.dev[glob];
+			me.globals = utils.extend({}, me.parameters.template.globals.dev);
 		else if (!me.cmdOpts[0] && me.globals.prod)
-			for (glob in me.parameters.template.globals.prod)
-				me.globals[glob] = me.parameters.template.globals.prod[glob];
+			me.globals = utils.extend({}, me.parameters.template.globals.prod);
 
 
 		delete me.globals.prod;
