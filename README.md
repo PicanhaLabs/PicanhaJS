@@ -143,9 +143,9 @@ List of layouts you will use in your frontmatter. You must have html files in yo
 Everything you set here will be available on your template.
 
 *reserved word*:
-	- ommitfilename [bool]: this will ommit the name of the file on url of posts
-	- dev [object]: properties setted in this object will be available when **grill** command is executed in dev mode.
-	- prod [object]: properties setted in this object will be available when **grill** command is executed in non-dev mode.
+- **omitfilename** [bool]: this will ommit the name of the file on url of posts
+- **dev** [object]: properties setted in this object will be available when **grill** command is executed in dev mode.
+- **prod** [object]: properties setted in this object will be available when **grill** command is executed in non-dev mode.
 
 **default**: {}
 
