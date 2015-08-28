@@ -59,15 +59,22 @@ Builder.prototype = {
 		me.templateCompiler = compiler;
 
 		toCompile.forEach(function(current) {
-			(function(name) {
-				fs.readFile(path.join(me.parameters.template.path, name + '.html'), 'utf8', function(error, data) {
-					if (error)
-						throw error;
-		
-					me.templates[name] = me.templateCompiler(data);
-				});
-			})(current);
+			me.readStoreTemplate(current);
 		});
+	},
+	
+	/**
+	 * Read and store a template
+	 */
+	readStoreTemplate: function(name) {
+		var me = this;
+		
+		fs.readFile(path.join(me.parameters.template.path, name + '.html'), 'utf8', function(error, data) {
+			if (error)
+				throw error;
+
+			me.templates[name] = me.templateCompiler(data);
+		});	
 	},
 
 	/**
@@ -154,15 +161,14 @@ Builder.prototype = {
 					if (isdraft)
 						filename += '-draft';
 					
+					var dateObj = {year: result.date.year(), month: result.date.month(), date: result.date.date()};						
 
 					if (!ispage)
-						newFileName		= me.makePostPath(filename, result.date);
+						newFileName		= me.makePostPath(filename, dateObj);
 					else
-						newFileName		= me.makePagePath(filename, result.date);
-
+						newFileName		= me.makePagePath(filename);
 
 					result.url			= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/').replace('index.html', '');
-
 					
 					console.log('\x1b[36mCreating ' + (isdraft ? 'DRAFT' : '') + ': \x1b[0m' + newFileName);
 
@@ -192,12 +198,12 @@ Builder.prototype = {
 	/**
 	 * Mount and create the post path (if it does not exist)
 	 */
-	makePostPath: function(filename, momentDate) {
+	makePostPath: function(filename, params) {
 		var me		= this, newFilePath, newFileName;
 
-		newFilePath = me.parameters.posts.dist.path.replace(':year', momentDate.year());
-		newFilePath = newFilePath.replace(':month', utils.padNumber(momentDate.month() + 1, 2));
-		newFilePath = newFilePath.replace(':day', utils.padNumber(momentDate.date(), 2));
+		newFilePath = me.parameters.posts.dist.path.replace(':year', params.year);
+		newFilePath = newFilePath.replace(':month', utils.padNumber(params.month + 1, 2));
+		newFilePath = newFilePath.replace(':day', utils.padNumber(params.date, 2));
 		newFilePath = newFilePath.replace(':name', filename);
 		
 		newFilePath = path.join(me.parameters.dist, newFilePath);
@@ -212,7 +218,7 @@ Builder.prototype = {
 	/**
 	 * Mount and create the page path (if it does not exist)
 	 */
-	makePagePath: function(filename, status) {
+	makePagePath: function(filename) {
 		var me		= this, newFilePath, newFileName;
 
 		newFilePath = path.join(me.parameters.dist, filename);
@@ -223,25 +229,26 @@ Builder.prototype = {
 		return newFileName;
 	},
 
+	sortPosts: function(post1, post2) {
+		return post2.creationdate - post1.creationdate;
+	},
+
 	createHome: function() {
 		var me = this;
 
 		return new Promise(function(resolve, reject) {
 			fs.readFile(path.join(me.parameters.template.path, me.parameters.template.home), 'utf8', function(fileErr, data) {
 				
-				if( fileErr )
-					throw fileErr;
+				if( fileErr ) {
+					reject(fileErr);
+					return;
+				}
 				
-				me.postsData = me.postsData.sort(function(post1, post2) {
-					return post2.creationdate - post1.creationdate;
-				});
+				me.postsData = me.postsData.sort(me.sortPosts);
 
-				var globals = {
+				var globals = utils.extend({
 					baseurl : ''
-				};
-
-				for (var glob in me.parameters.template.globals)
-					globals[glob] = me.parameters.template.globals[glob];
+				}, me.parameters.template.globals);
 
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
@@ -252,11 +259,13 @@ Builder.prototype = {
 				console.log('\x1b[36mCreating :\x1b[0m home');
 				
 				fs.writeFile(path.join(me.parameters.dist, 'index.html'), result, function(writeError) {
-					if( writeError )
-						throw writeError;
+					if( writeError ) {
+						reject(writeError);
+						return false;
+					}
+					
+					resolve();					
 				});
-
-				resolve();
 			});
 		});
 	},
