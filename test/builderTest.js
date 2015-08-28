@@ -6,7 +6,7 @@ var assert = require('chai').assert,
 
 var Creator = require('../bin/builder');
 
-var instance = new Creator({ libpath: '', clientpath: '' });
+var instance = new Creator({ libpath: '', clientpath: '', commandOpt: []});
 
 /*
 {
@@ -25,7 +25,12 @@ var instance = new Creator({ libpath: '', clientpath: '' });
 		"partials"	: "partials",
 		"static"	: ["css", "js", "img"],
 		"globals"	: {
-			"baseurl"	: "http://static.local/_build/"
+			"dev" : {
+				"omitfilename" : false
+			},
+			"prod" : {
+				"omitfilename" : true
+			}
 		}
 	}
 }
@@ -184,10 +189,17 @@ describe('Builder', function(){
 			});
 		});
 		
+		describe('setGlobals', function(){
+			it('should create globals object', function(){
+				instance.setGlobals();
+				assert.isObject(instance.globals);
+			});
+		});
+
 		describe('createAuthors', function(){
 			it('should create the authors array', function(){
 				instance.createAuthors();
-				assert.isArray(instance.authors);
+				assert.isArray(instance.globals.authors);
 			});
 		});
 		
@@ -203,5 +215,6 @@ describe('Builder', function(){
 				assert.strictEqual(founded.email, email);
 			});
 		});
+
 	});
 });

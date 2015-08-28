@@ -14,7 +14,14 @@
 		"partials"	: "partials",
 		"static"	: ["css", "js", "img"],
 		"layouts"	: ["post", "page"],
-		"globals"	: {}
+		"globals"	: {
+			"dev" : {
+				"omitfilename" : false
+			},
+			"prod" : {
+				"omitfilename" : true
+			}
+		}
 	},
 	"defaultAuthorSizes" : {
 		"xsmall"	: 40,

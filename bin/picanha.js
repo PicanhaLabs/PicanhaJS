@@ -19,7 +19,7 @@ if (cmd[0] === 'beginbbq') {
 	/* second param is "verbose" */
 	creator.create(utils.recursiveCopy, true);
 
-} else {
+} else if (cmd[0] === 'grill' || !cmd.length) {
 	
 	var fm				= require('front-matter'),
 		marked			= require('marked'),
@@ -55,7 +55,11 @@ if (cmd[0] === 'beginbbq') {
 		}
 	});
 
-	var builder = new Builder({ libpath: libpath, clientpath: clientpath });
+	var builder = new Builder({ 
+		libpath		: libpath,
+		clientpath	: clientpath,
+		commandOpt	: cmd.slice(1)
+	});
 
 	builder.setParameters(parameters);
 

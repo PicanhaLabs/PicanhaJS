@@ -9,9 +9,13 @@ function Builder(config) {
 	var options = config || {};
 
 	this.paths	= {
-		lib: options.libpath,	
-		cli: options.clientpath	
+		lib		: options.libpath,
+		cli		: options.clientpath
 	};
+
+	this.cmdOpts = options.commandOpt;
+
+	this.globals = {};
 }
 
 Builder.prototype = {
@@ -95,7 +99,7 @@ Builder.prototype = {
 		});
 	},
 
-	buildPosts: function(files){
+	buildPosts: function(files) {
 		var me = this, p = [];
 
 		return new Promise(function(resolve) {
@@ -110,14 +114,30 @@ Builder.prototype = {
 		});
 	},
 
+	setGlobals: function() {
+		var me = this, glob;
+
+		for (glob in me.parameters.template.globals)
+			me.globals[glob] = me.parameters.template.globals[glob];
+
+		
+		if (me.cmdOpts[0] === 'dev' && me.globals.dev)
+			for (glob in me.parameters.template.globals.dev)
+				me.globals[glob] = me.parameters.template.globals.dev[glob];
+		else if (!me.cmdOpts[0] && me.globals.prod)
+			for (glob in me.parameters.template.globals.prod)
+				me.globals[glob] = me.parameters.template.globals.prod[glob];
+
+
+		delete me.globals.prod;
+		delete me.globals.dev;
+	},
+
 	/**
 	 * Make the post compiling with the passed compiler
 	 */
 	makePost: function( filePath ) {
 		var me = this, newFileName, globals = {}, content, filename, result, ispage, page, isdraft;
-
-		for (var glob in me.parameters.template.globals)
-			globals[glob] = me.parameters.template.globals[glob];
 
 		return new Promise(function(resolve) {
 
@@ -141,8 +161,7 @@ Builder.prototype = {
 					ispage				= result.template !== 'post' && result.template;
 					isdraft				= result.draft;
 					
-					globals.baseurl		= ispage ? '../' : '../../../../';
-					globals.authors		= me.authors;
+					me.globals.baseurl	= ispage ? '../' : '../../../../';
 					
 					result.date			= result.date ? moment(result.date, me.parameters.posts.dateformat) : moment();
 					result.author		= me.findAuthor(result.author);
@@ -151,7 +170,7 @@ Builder.prototype = {
 
 					page				= me.templateCompiler( me.postCompiler(content.body) );
 						
-					result.body			= page({ globals: globals });
+					result.body			= page({ globals: me.globals });
 					result.excerpt		= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
 					result.description	= result.excerpt.replace(/(<([^>]+)>)/gi, '');
 
@@ -168,19 +187,23 @@ Builder.prototype = {
 					else
 						newFileName		= me.makePagePath(filename);
 
-					result.url			= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/').replace('index.html', '');
+					result.url			= newFileName.replace( path.normalize(me.parameters.dist), '' ).replace(/\\/g, '/');
+
+
+					if (me.globals.omitfilename)
+						result.url = result.url.replace(me.parameters.posts.dist.name, '');
+					
 					
 					console.log('\x1b[36mCreating ' + (isdraft ? 'DRAFT' : '') + ': \x1b[0m' + newFileName);
 
 
 					if( !ispage && !isdraft )
 						me.postsData.push(result);
-					
-					
+
 					var tpl		= !ispage ? me.templates.post : me.templates[result.template],
 						html	= tpl({
 							post	: result,
-							globals : globals
+							globals : me.globals
 						});				
 					
 					fs.writeFile(newFileName, html, function(writeError){
@@ -244,16 +267,13 @@ Builder.prototype = {
 					return;
 				}
 				
-				me.postsData = me.postsData.sort(me.sortPosts);
+				me.postsData		= me.postsData.sort(me.sortPosts);
+				me.globals.baseurl	= '';
 
-				var globals = utils.extend({
-					baseurl : ''
-				}, me.parameters.template.globals);
-
-				var tpl		= me.templateCompiler(data),	
-					result	= tpl({
+				var tpl				= me.templateCompiler(data),	
+					result			= tpl({
 						posts	: me.postsData,
-						globals : globals
+						globals : me.globals
 					});
 				
 				console.log('\x1b[36mCreating :\x1b[0m home');
@@ -274,9 +294,9 @@ Builder.prototype = {
 		var me		= this,
 			hash;
 		
-		me.authors	= me.parameters.authors || [];
+		me.globals.authors	= me.parameters.authors || [];
 
-		me.authors.forEach(function(el) {
+		me.globals.authors.forEach(function(el) {
 			var md5	= crypto.createHash('md5');
 			hash 	= md5.update(el.email).digest("hex");
 
@@ -289,7 +309,7 @@ Builder.prototype = {
 	findAuthor : function(email) {
 		var me		= this, result, md5, hash;
 
-		result = me.authors.filter(function(el) {
+		result = me.globals.authors.filter(function(el) {
 			return el.email === email;
 		});
 
@@ -316,6 +336,7 @@ Builder.prototype = {
 		var me = this;
 
 		me.createAuthors();
+		me.setGlobals();
 
 		console.log('\x1b[36mCleaning\x1b[0m');
 
