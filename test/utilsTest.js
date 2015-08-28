@@ -36,9 +36,19 @@ describe('Utils functions', function() {
 	});
 	
 	describe('formatData', function() {
-		it('should format a date on verbose format', function(){
-			var date = new Date(1440339208567);
+		it('should format a date on verbose format (th)', function() {
+			var date = new Date(2015, 07, 23);
 			assert.strictEqual(utils.formatData(date), 'August 23th, 2015');
+		});
+
+		it('should format a date on verbose format (nd)', function() {
+			var date = new Date(2015, 07, 22);
+			assert.strictEqual(utils.formatData(date), 'August 22nd, 2015');
+		});
+
+		it('should format a date on verbose format (st)', function() {
+			var date = new Date(2015, 07, 21);
+			assert.strictEqual(utils.formatData(date), 'August 21st, 2015');
 		});
 	});
 	

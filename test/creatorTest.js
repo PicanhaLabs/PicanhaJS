@@ -36,5 +36,18 @@ describe('Creator', function(){
 			
 			instance.create(copyFn);
 		});
+
+		it('should create the default structure', function(done){
+			var instance = new Creator({ libpath: '', clientpath: '' }),
+				feito = false,
+				copyFn  = function() {
+					if( !feito ) {
+						feito = true;
+						done();
+					}
+				};
+			
+			instance.create(copyFn, true);
+		});
 	});
 });

@@ -7,6 +7,7 @@ var assert = require('chai').assert,
 var Creator = require('../bin/builder');
 
 var instance = new Creator({ libpath: '', clientpath: '', commandOpt: []});
+var instance2 = new Creator({ libpath: '', clientpath: '', commandOpt: ['dev']});
 
 /*
 {
@@ -36,6 +37,7 @@ var instance = new Creator({ libpath: '', clientpath: '', commandOpt: []});
 }
 */
 instance.setParameters(defaultparams);
+instance2.setParameters(defaultparams);
 
 describe('Builder', function(){
 	
@@ -195,6 +197,13 @@ describe('Builder', function(){
 				assert.isObject(instance.globals);
 				assert.isUndefined(instance.globals.prod);
 				assert.isUndefined(instance.globals.dev);
+			});
+
+			it('should create globals object DEV', function(){
+				instance2.setGlobals();
+				assert.isObject(instance2.globals);
+				assert.isUndefined(instance2.globals.prod);
+				assert.isUndefined(instance2.globals.dev);
 			});
 		});
 
