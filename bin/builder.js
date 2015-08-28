@@ -229,6 +229,10 @@ Builder.prototype = {
 		return newFileName;
 	},
 
+	sortPosts: function(post1, post2) {
+		return post2.creationdate - post1.creationdate;
+	},
+
 	createHome: function() {
 		var me = this;
 
@@ -237,18 +241,14 @@ Builder.prototype = {
 				
 				if( fileErr ) {
 					reject(fileErr);
+					return;
 				}
 				
-				me.postsData = me.postsData.sort(function(post1, post2) {
-					return post2.creationdate - post1.creationdate;
-				});
+				me.postsData = me.postsData.sort(me.sortPosts);
 
-				var globals = {
+				var globals = utils.extend({
 					baseurl : ''
-				};
-
-				for (var glob in me.parameters.template.globals)
-					globals[glob] = me.parameters.template.globals[glob];
+				}, me.parameters.template.globals);
 
 				var tpl		= me.templateCompiler(data),	
 					result	= tpl({
@@ -261,10 +261,11 @@ Builder.prototype = {
 				fs.writeFile(path.join(me.parameters.dist, 'index.html'), result, function(writeError) {
 					if( writeError ) {
 						reject(writeError);
+						return false;
 					}
+					
+					resolve();					
 				});
-
-				resolve();
 			});
 		});
 	},
