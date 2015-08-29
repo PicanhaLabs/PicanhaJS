@@ -18,6 +18,8 @@ Creator.prototype = {
 	get toCopy() {
 		return ['/_posts', '/_templates'];
 	},
+
+	log: console.log,
 	
 	/**
 	 * Method to beginbbq Creator
@@ -26,7 +28,7 @@ Creator.prototype = {
 		var me = this, promises = [];
 
 		if( verbose )
-			console.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
+			me.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
 
 		me.toCopy.forEach(function(current) {
 			promises.push(copyFn( path.join(me.paths.lib, current), path.join(me.paths.cli, current) ));
@@ -34,7 +36,7 @@ Creator.prototype = {
 	
 		Promise.all(promises).then(function() {
 			if( verbose )
-				console.log('\x1b[36mYou can start cooking!\x1b[0m');
+				me.log('\x1b[36mYou can start cooking!\x1b[0m');
 		});
 	}
 };

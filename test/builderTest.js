@@ -1,47 +1,73 @@
 var assert = require('chai').assert,
 	Promise = require('promise'),
 	path 	= require('path'),
+	ncp		= require('ncp'),
 	fs 		= require('fs'),
-	defaultparams = require('../bin/picanha.json');
+	utils 	= require('../bin/utils'),
+	defaultparams = require('../bin/picanha.json'),
+	fm				= require('front-matter'),
+	marked			= require('marked'),
+	parameters		= require('../bin/picanha.json'),
+	handlebars		= require('handlebars');
 
 var Creator = require('../bin/builder');
 
-var instance = new Creator({ libpath: '', clientpath: '', commandOpt: []});
-var instance2 = new Creator({ libpath: '', clientpath: '', commandOpt: ['dev']});
+var instance = new Creator({ libpath: '', clientpath: '', commandOpt: 'prod'});
+var instance2 = new Creator({ libpath: '', clientpath: '', commandOpt: 'dev'});
 
-/*
-{
-	"dist"		: "./_build/",
-	"posts"		: {
-		"dist"		: { 
-			"path"		: ":year/:month/:day/:name/",
-			"name"		: "index.html"
-		},
-		"source"	: "./_posts"
-	},
-	"template"	: {
-		"path"		: "./_templates/default_theme/",
-		"home"		: "home.html",
-		"post"		: "post.html",
-		"partials"	: "partials",
-		"static"	: ["css", "js", "img"],
-		"globals"	: {
-			"dev" : {
-				"omitfilename" : false
-			},
-			"prod" : {
-				"omitfilename" : true
-			}
-		}
-	}
-}
-*/
+utils.registerPartials( handlebars, path.join(parameters.template.path, parameters.template.partials) );
+
+marked.setOptions({
+	renderer	: new marked.Renderer(),
+	gfm			: true,
+	tables		: true,
+	breaks		: false,
+	pedantic	: false,
+	sanitize	: true,
+	smartLists	: true,
+	smartypants : false
+});
+
+var builder = new Creator({ 
+	libpath		: '',
+	clientpath	: '',
+	commandOpt	: 'prod'
+});
+
+builder.setParameters(parameters);
+
+builder.setFrontMatterCompiler(fm);
+
+builder.setCopyFn(ncp);
+
+builder.setPostCompiler(marked);
+
+builder.setTemplateCompiler(function( data ) {
+	var tpl = handlebars.compile(data);
+	return tpl;
+});
+
+builder.setLogger(function(){});
+instance.setLogger(function(){});
+instance2.setLogger(function(){});
+
 instance.setParameters(defaultparams);
 instance2.setParameters(defaultparams);
 
 describe('Builder', function(){
 	
+	before(function(){
+        utils.deleteFolderRecursive(path.normalize('./_build'));
+    });
+	
 	describe('Instance', function(){
+		it('can be created without parameters', function(){
+			var n = new Creator();
+			
+			assert.isUndefined(n.paths.lib);
+			assert.isUndefined(n.paths.cli);
+		});
+		
 		it('receives the lib path and client path', function(){
 			assert.isString(instance.paths.lib);
 			assert.isString(instance.paths.cli);
@@ -106,6 +132,7 @@ describe('Builder', function(){
 		
 		describe('setCopyFn', function(){
 			it('receives a function to copy folders and files', function(){
+				instance.copyFn();
 				instance.setCopyFn(function(){
 					return true;
 				});
@@ -208,8 +235,13 @@ describe('Builder', function(){
 		});
 
 		describe('createAuthors', function(){
-			it('should create the authors array', function(){
+			it('should not receive the authors list', function(){
 				instance.createAuthors();
+				assert.strictEqual(instance.globals.authors.length, 0);
+			});
+			
+			it('should create the authors array', function(){
+				instance.createAuthors( instance.parameters.authors );
 				assert.isArray(instance.globals.authors);
 			});
 		});
@@ -221,9 +253,106 @@ describe('Builder', function(){
 			});
 			
 			it('should return an default if dont found an author', function(){
-				var email = 'defaultthatnoexists@notfounddomain.com.xsxsxs',
+				var email = 'not and e-mail',
 					founded = instance.findAuthor(email);
 				assert.strictEqual(founded.email, email);
+			});
+		});
+		
+		describe('copyStatic', function(){
+			it('should copy the static folder list to the dist folder', function(){
+				instance.setCopyFn(ncp);
+				instance.copyStatic().then(function(){
+					var one = instance.parameters.template.static[0];
+					
+					assert.isTrue(
+						fs.existsSync(path.join(instance.paths.cli, instance.parameters.dist, one))
+					);
+				});
+				
+			});
+		});
+
+		describe('write', function(){
+			it('should reject a promise on try write a file on a non existent path', function(done){
+				instance.write('./error/path', '').catch(function(){
+					done();
+				});
+			});
+		});
+
+		describe('copy', function(){
+			it('should reject a promise on try copy a inexistent file', function(done){
+				instance.copy('./error/path', './error').catch(function(){
+					done();
+				});
+			});
+		});
+		
+		describe('buildPosts', function(){
+			it('should call makePost for each founded file', function(done){
+				instance.makePost = function() {
+					return new Promise(function(resolve){ resolve() });	
+				};
+				
+				instance.buildPosts(['a','b','c']).then(function(){
+					done();
+				});
+			});
+		});
+		
+		describe('execute', function(){
+			it('should call hierarchically the functions to build the content', function(){
+				instance.getFiles = function(){return new Promise(function(resolve){ resolve() });}
+				instance.buildPosts = function(){return new Promise(function(resolve){ resolve() });}
+				instance.createHome = function(){return new Promise(function(resolve){ resolve() });}
+				instance.copyStatic = function(){return new Promise(function(resolve){ resolve() });}
+				instance.execute();
+			});
+		});
+
+		describe('makePost', function(){
+			it('create the compiled post file', function(done){
+				builder.setGlobals();
+				builder.createAuthors(parameters.authors);
+				builder.makePost(path.normalize('./_posts/first-post.md')).then(function(writed){
+					setTimeout(function(){ //this has no fucking logic
+						assert.strictEqual(fs.existsSync(writed), true);
+						done();
+					}, 10);
+				});
+			});
+			
+			it('should reject on file stats error', function(done){
+				builder.makePost(path.normalize('./to/error.md')).catch(function(){
+					done();
+				});
+			});
+			
+			it('should do nothing on receive a directory', function(){
+				builder.makePost(path.normalize('./_posts'));
+			});
+			
+			it('should create a posts with minimum front matter', function(){
+				builder.makePost(path.normalize('./_posts/no-info-post.md')).then(function(writed){
+					assert.strictEqual(fs.existsSync(writed), true);
+					done();
+				});
+			});
+			
+			it('should create a post with page layout', function(){
+				builder.makePost(path.normalize('./_posts/about.md')).then(function(writed){
+					assert.strictEqual(fs.existsSync(writed), true);
+					done();
+				});
+			});
+			
+			it('should create a draft post', function(){
+				builder.makePost(path.normalize('./_posts/draft.md')).then(function(writed){
+					assert.include(writed, '-draft');
+					assert.strictEqual(fs.existsSync(writed), true);
+					done();
+				});
 			});
 		});
 

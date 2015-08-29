@@ -3,6 +3,8 @@ var assert = require('chai').assert,
 
 var Creator = require('../bin/creator');
 
+Creator.prototype.log = function(){};
+
 describe('Creator', function(){
 	
 	describe('Prototype', function(){

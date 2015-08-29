@@ -31,11 +31,17 @@ Builder.prototype = {
 	postCompiler: null,
 	
 	copyFn: function() {},
+	
+	log: console.log,
 
 	/**
 	 * Templates that will be used on build
 	 */
 	templates: { post: null, page: null },
+
+	setLogger: function( fn ) {
+		this.log = fn;
+	},
 
 	setCopyFn: function(fn) {
 		this.copyFn = fn;
@@ -102,30 +108,26 @@ Builder.prototype = {
 	buildPosts: function(files) {
 		var me = this, p = [];
 
-		return new Promise(function(resolve) {
-			
-			files.forEach(function(file) {
-				p.push(me.makePost(path.join(me.parameters.posts.source, file)));			
-			});
-	
-			Promise.all(p).then(function() {
-				resolve();
-			});
+		files.forEach(function(file) {
+			p.push(me.makePost(path.join(me.parameters.posts.source, file)));			
 		});
+
+		return Promise.all(p);
 	},
 
 	setGlobals: function() {
 		var me = this, glob;
 
+		me.globals = {};
+
 		for (glob in me.parameters.template.globals)
 			me.globals[glob] = me.parameters.template.globals[glob];
 
-		
-		if (me.cmdOpts[0] === 'dev' && me.globals.dev)
-			me.globals = utils.extend({}, me.parameters.template.globals.dev);
-		else if (!me.cmdOpts[0] && me.globals.prod)
-			me.globals = utils.extend({}, me.parameters.template.globals.prod);
-
+		if (me.cmdOpts === 'dev' && me.globals.dev) {
+			me.globals = utils.extend(me.globals, me.parameters.template.globals.dev);
+		} else if (me.globals.prod) {
+			me.globals = utils.extend(me.globals, me.parameters.template.globals.prod);
+		}
 
 		delete me.globals.prod;
 		delete me.globals.dev;
@@ -137,22 +139,19 @@ Builder.prototype = {
 	makePost: function( filePath ) {
 		var me = this, newFileName, globals = {}, content, filename, result, ispage, page, isdraft;
 
-		return new Promise(function(resolve) {
+		return new Promise(function(resolve, reject) {
 
 			fs.stat(filePath, function(statsError, stats) {
 
-				if (stats.isDirectory())
+				if ( stats && stats.isDirectory())
 					return true;
 					
-				if (statsError)
-					throw statsError;
-				
+				if (statsError) {
+					reject(statsError);
+					return false;
+				}
 					
-				fs.readFile(filePath, 'utf8', function(fileErr, data) {
-					
-					if (fileErr)
-						throw fileErr;
-					
+				fs.readFile(filePath, 'utf8', function(fileErr, data) {					
 
 					content				= me.frontMatterCompiler(data);
 					result				= content.attributes;
@@ -192,7 +191,7 @@ Builder.prototype = {
 						result.url = result.url.replace(me.parameters.posts.dist.name, '');
 					
 					
-					console.log('\x1b[36mCreating ' + (isdraft ? 'DRAFT' : '') + ': \x1b[0m' + newFileName);
+					me.log('\x1b[36mCreating ' + (isdraft ? 'DRAFT' : '') + ': \x1b[0m' + newFileName);
 
 
 					if( !ispage && !isdraft )
@@ -204,14 +203,27 @@ Builder.prototype = {
 							globals : me.globals
 						});				
 					
-					fs.writeFile(newFileName, html, function(writeError){
-						if (writeError)
-							throw writeError;
-					});
+					me.write(newFileName, html);
 					
-					resolve();
+					resolve(newFileName);
 				});
 				
+			});
+		});
+	},
+	
+	/**
+	 * Write a file in promise way
+	 */
+	write: function( path, content ) {
+		return new Promise(function(resolve, reject){
+			fs.writeFile(path, content, function(writeError){
+				if (writeError) {
+					reject(writeError);
+					return false;
+				}
+					
+				resolve();
 			});
 		});
 	},
@@ -274,7 +286,7 @@ Builder.prototype = {
 						globals : me.globals
 					});
 				
-				console.log('\x1b[36mCreating :\x1b[0m home');
+				me.log('\x1b[36mCreating :\x1b[0m home');
 				
 				fs.writeFile(path.join(me.parameters.dist, 'index.html'), result, function(writeError) {
 					if( writeError ) {
@@ -288,11 +300,11 @@ Builder.prototype = {
 		});
 	},
 
-	createAuthors : function() {
+	createAuthors : function( authors ) {
 		var me		= this,
 			hash;
 		
-		me.globals.authors	= me.parameters.authors || [];
+		me.globals.authors	= authors || [];
 
 		me.globals.authors.forEach(function(el) {
 			var md5	= crypto.createHash('md5');
@@ -316,7 +328,7 @@ Builder.prototype = {
 			
 			result			= {};
 			result.email	= email;
-			result.name		= email.split('@')[0] || email;
+			result.name		= email.split('@')[0];
 
 			hash			= md5.update(email).digest("hex");
 
@@ -333,25 +345,49 @@ Builder.prototype = {
 	execute: function() {
 		var me = this;
 
-		me.createAuthors();
+		me.createAuthors( me.parameters.authors );
 		me.setGlobals();
 
-		console.log('\x1b[36mCleaning\x1b[0m');
+		me.log('\x1b[36mCleaning\x1b[0m');
 
 		utils.deleteFolderRecursive(me.parameters.dist);
 
 		me.getFiles()
 			.then(me.buildPosts.bind(me))
 			.then(me.createHome.bind(me))
-			.then(function() {
-				me.parameters.template.static.forEach(function(current){
-					me.copyFn(
-						path.join(me.paths.cli, me.parameters.template.path, current), 
-						path.join(me.paths.cli, me.parameters.dist, current)
-					);
-				});				
-			})
-			.catch(console.log);
+			.then(me.copyStatic.bind(me))
+			.catch(me.log);
+	},
+	
+	copyStatic: function() {
+		var me = this, promises = [];
+		
+		me.parameters.template.static.forEach(function(current){
+			promises.push(me.copy(
+				path.join(me.paths.cli, me.parameters.template.path, current), 
+				path.join(me.paths.cli, me.parameters.dist, current)
+			));
+		});
+		
+		return Promise.all(promises);
+	},
+	
+	copy: function( from, to ) {
+		var me = this;
+		
+		return new Promise(function(resolve, reject){
+			me.copyFn(
+				from, to,
+				function(err) {
+					if( err ) {
+						reject(err);
+						return false;
+					}
+					
+					resolve();
+				}
+			);
+		});
 	}
 };
 

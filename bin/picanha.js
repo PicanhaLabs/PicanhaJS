@@ -58,7 +58,7 @@ if (cmd[0] === 'beginbbq') {
 	var builder = new Builder({ 
 		libpath		: libpath,
 		clientpath	: clientpath,
-		commandOpt	: cmd.slice(1)
+		commandOpt	: cmd.slice(1)[0]
 	});
 
 	builder.setParameters(parameters);
@@ -68,7 +68,7 @@ if (cmd[0] === 'beginbbq') {
 	builder.setCopyFn(ncp);
 
 	builder.setPostCompiler(marked);
-
+	
 	builder.setTemplateCompiler(function( data ) {
 		var tpl = handlebars.compile(data);
 		return tpl;
