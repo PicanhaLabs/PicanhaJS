@@ -32,6 +32,7 @@ describe('Utils functions', function() {
 			assert.strictEqual(utils.padNumber(2, 2), '02', 'Padding 2 with size 2');
 			assert.strictEqual(utils.padNumber(22, 2), '22', 'Padding 22 with size 2');
 			assert.strictEqual(utils.padNumber(1, 5), '00001', 'Padding 1 with size 5');
+			assert.strictEqual(utils.padNumber(2), '02', 'Padding 2 with size 2. Omit second parameter.');
 		});
 	});
 	
@@ -63,6 +64,12 @@ describe('Utils functions', function() {
 	describe('deleteFolderRecursive', function() {
 		it('should remove recursively an dir', function(){
 			utils.deleteFolderRecursive(path.normalize('./testRecursive'));
+			
+			assert.strictEqual(fs.existsSync(path.normalize('./testRecursive')), false, 'the created path must NOT exist');
+		});
+
+		it('should remove recursively an dir', function(){
+			utils.deleteFolderRecursive(path.normalize('./asdasdas'));
 			
 			assert.strictEqual(fs.existsSync(path.normalize('./testRecursive')), false, 'the created path must NOT exist');
 		});

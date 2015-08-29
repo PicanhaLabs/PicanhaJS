@@ -332,6 +332,11 @@ describe('Builder', function(){
 			it('should do nothing on receive a directory', function(){
 				builder.makePost(path.normalize('./_posts'));
 			});
+
+			it('should do nothing on receive a directory', function(){
+				delete instance.globals.omitfilename;
+				builder.makePost(path.normalize('./_posts'));
+			});
 			
 			it('should create a posts with minimum front matter', function(){
 				builder.makePost(path.normalize('./_posts/no-info-post.md')).then(function(writed){

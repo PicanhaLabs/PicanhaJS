@@ -2,7 +2,10 @@ var Promise 	= require('promise'),
 	path 		= require('path');
 
 function Creator( config ) {
-	var options = config || {};
+	if (!config)
+		throw Error('Missing config param.');
+
+	var options = config;
 
 	this.paths = {
 		lib: options.libpath,	
@@ -31,7 +34,10 @@ Creator.prototype = {
 			me.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
 
 		me.toCopy.forEach(function(current) {
-			promises.push(copyFn( path.join(me.paths.lib, current), path.join(me.paths.cli, current) ));
+			var p1 = path.join(me.paths.lib, current),
+				p2 = path.join(me.paths.cli, current),
+				cp = copyFn(p1, p2);
+			promises.push(cp);
 		});
 	
 		Promise.all(promises).then(function() {
