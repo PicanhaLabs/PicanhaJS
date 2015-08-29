@@ -52,9 +52,8 @@ describe('Creator', function(){
 			instance.create(copyFn, true);
 		});
 
-		it('should create the default structure. empty param.', function(done){
+		it('should create the default structure. empty param.', function(){
 			assert.throw(Creator, 'Missing config param.');
-			done();
 		});
 	});
 });
