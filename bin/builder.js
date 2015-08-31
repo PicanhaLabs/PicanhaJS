@@ -107,7 +107,6 @@ Builder.prototype = {
 
 	buildPosts: function(files) {
 		var me = this, p = [];
-
 		files.forEach(function(file) {
 			p.push(me.makePost(path.join(me.parameters.posts.source, file)));			
 		});
@@ -271,7 +270,6 @@ Builder.prototype = {
 
 		return new Promise(function(resolve, reject) {
 			fs.readFile(path.join(me.parameters.template.path, me.parameters.template.home), 'utf8', function(fileErr, data) {
-				
 				if( fileErr ) {
 					reject(fileErr);
 					return;
@@ -344,9 +342,8 @@ Builder.prototype = {
 
 	execute: function() {
 		var me = this;
-
-		me.createAuthors( me.parameters.authors );
 		me.setGlobals();
+		me.createAuthors( me.parameters.authors );
 
 		me.log('\x1b[36mCleaning\x1b[0m');
 

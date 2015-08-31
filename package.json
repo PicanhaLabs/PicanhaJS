@@ -1,6 +1,6 @@
 {
   "name": "picanhajs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tasty website static generator",
   "preferGlobal": "true",
   "author": "Picanha Labs",
