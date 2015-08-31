@@ -1,5 +1,5 @@
 ---
-title: First post
+title: No Information Post
 author: PicanhaLabs
 ---
 

@@ -167,7 +167,20 @@ Builder.prototype = {
 					page				= me.templateCompiler( me.postCompiler(content.body) );
 						
 					result.body			= page({ globals: me.globals });
-					result.excerpt		= result.excerpt ? '<p>' + result.excerpt + '</p>' : result.body.match(/<p>.+<\/p>/i)[0];
+
+					if( !result.excerpt ) {
+						var paragraphs = result.body.match(/<p>.+<\/p>/i);
+
+						if( paragraphs ) {
+							result.excerpt = paragraphs[0];
+						} else {
+							result.excerpt = '';
+							me.log('\033[31mThe post "' + result.title + '" does not have suficient informations to make an excerpt\x1b[0m');
+						}
+					} else {
+						result.excerpt	= '<p>' + result.excerpt + '</p>';
+					}
+
 					result.description	= result.excerpt.replace(/(<([^>]+)>)/gi, '');
 
 					filename			= path.basename(filePath).split('.')[0];
@@ -340,6 +353,21 @@ Builder.prototype = {
 		return result;
 	},
 
+	indexPosts: function() {
+		var me = this;
+		
+		return new Promise(function(resolve, reject){
+			fs.writeFile(path.join(me.parameters.dist, 'indexed.json'), JSON.stringify(me.postsData), function(writeError){
+				if (writeError) {
+					reject(writeError);
+					return false;
+				}
+
+				resolve();
+			});
+		});
+	},
+
 	execute: function() {
 		var me = this;
 		me.setGlobals();
@@ -353,6 +381,7 @@ Builder.prototype = {
 			.then(me.buildPosts.bind(me))
 			.then(me.createHome.bind(me))
 			.then(me.copyStatic.bind(me))
+			.then(me.indexPosts.bind(me))
 			.catch(me.log);
 	},
 	
