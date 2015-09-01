@@ -353,17 +353,47 @@ Builder.prototype = {
 		return result;
 	},
 
+	normalizeToIndex: function() {
+		var me = this, exclude = ["is", "not", "yes", "aboard", "about", "above", "absent", "across", "after", "against", "along", "alongside", "amid", "amidst", "among", "anti", "around", "as", "at", "atop", "bar", "barring", "before", "behind", "below", "beneath", "beside", "besides", "between", "beyond", "but", "by", "circa", "counting", "concerning", "considering", "despite", "down", "during", "except", "excepting", "excluding", "following", "for", "from", "given", "gone", "in", "in front of", "inside", "instead of", "into", "less", "like", "mid", "minus", "near", "next", "of", "off", "on", "on top of", "onto", "opposite", "out of", "outside", "over", "past", "pending", "per", "plus", "pro", "regarding", "regardless of", "round", "save", "saving", "since", "the", "than", "through", "throughout", "till", "times", "to", "toward", "towards", "under", "underneath", "unlike", "until", "up", "upon", "versus", "via", "with", "within", "without", "worth", "all", "another", "any", "anybody", "anyone", "anything", "both", "each", "each other", "either", "everybody", "everyone", "everything", "few", "he", "her", "hers", "herself", "him", "himself", "his", "I", "it", "its", "itself", "little", "many", "me", "mine", "more", "most", "much", "my", "myself", "neither", "no one", "nobody", "none", "nothing", "one", "one another", "other", "others", "our", "ours", "ourselves", "several", "she", "some", "somebody", "someone", "something", "that", "their", "theirs", "them", "themselves", "these", "they", "this", "those", "us", "we", "what", "whatever", "which", "whichever", "who", "whoever", "whom", "whomever", "whose", "you", "your", "yours", "yourself", "yourselves"];
+		
+		var group = exclude.join('|').replace(/\s/, "\\s");
+		
+		me.postsData.map(function(data){
+			if( data.author && typeof data.author.name !== 'undefined' ) {
+				data.author = data.author.name;
+			}
+			
+			delete data.url;
+			delete data.date;
+			delete data.banner;
+			delete data.excerpt;
+			delete data.creation;
+			delete data.description;
+			
+			if( data.body ) {
+				data.body = data.body.replace(/(<([^>]+)>)/gi, '');
+				data.body = data.body.replace(new RegExp("\\s(" + group + ")(?![A-z0-9\\_\\-])", 'gi'), ' ');
+			}
+			
+			return data;
+		});
+	},
+
 	indexPosts: function() {
 		var me = this;
 		
+		me.normalizeToIndex();
+		
 		return new Promise(function(resolve, reject){
-			fs.writeFile(path.join(me.parameters.dist, 'indexed.json'), JSON.stringify(me.postsData), function(writeError){
+			var content = JSON.stringify(me.postsData);
+			
+			fs.writeFile(path.join(me.parameters.dist, 'indexed.json'), content, function(writeError){
 				if (writeError) {
 					reject(writeError);
 					return false;
 				}
 
-				resolve();
+				resolve(content);
 			});
 		});
 	},

@@ -8,11 +8,11 @@ date: 10/10/2015
 excerpt: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis sunt magni sapiente voluptatum, ea sit, tempore excepturi fuga ipsa voluptate, dolores tenetur placeat dolore asperiores cupiditate. Voluptate recusandae dolores laborum.
 ---
 
-# A subtitle
+# A barring subtitle
 
 ![Post Image]({{globals.baseurl}}img/post/pic01.jpg)
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet error ipsa, maxime aliquid ea fugiat doloremque ducimus, quo laboriosam numquam! Architecto, minima, alias. Earum adipisci a minus totam officiis!
+A past Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet error ipsa, maxime aliquid ea fugiat doloremque ducimus, quo laboriosam numquam! Architecto, minima, alias. Earum adipisci a minus totam officiis!
 
 Saepe officia ipsum, voluptatibus autem incidunt ratione totam accusamus! Pariatur sit vitae saepe dicta quisquam ab non similique velit voluptate recusandae impedit soluta quo dolore, sequi expedita modi enim fugiat.
 

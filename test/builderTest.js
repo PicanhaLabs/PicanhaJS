@@ -185,7 +185,7 @@ describe('Builder', function(){
 			describe('file not found', function(){
 				it('should reject an promise file found error', function(done){
 					var old = instance.parameters.template.path;
-					instance.parameters.template.path = './path/to/error';
+					instance.parameters.template.path = './path/to/error' + ( Math.random() * 100 );
 					instance.createHome().catch(function(){
 						done();
 					});
@@ -196,7 +196,7 @@ describe('Builder', function(){
 			describe('write error', function(){
 				it('should reject an promise on cant write file', function(done){
 					var old = instance.parameters.dist;
-					instance.parameters.dist = './path/to/error';
+					instance.parameters.dist = './path/to/error' + ( Math.random() * 100 );
 					instance.createHome().catch(function(){
 						instance.parameters.dist = old;
 						done();
@@ -301,12 +301,57 @@ describe('Builder', function(){
 			});
 		});
 		
+		describe('normalizeToIndex', function(){
+			it('should clean the postsData variable', function(){
+				instance.postsData = [{ author: null }];
+				instance.normalizeToIndex();
+				assert.isNull(instance.postsData[0].author);
+				
+				instance.postsData = [{ author: true }];
+				instance.normalizeToIndex();
+				assert.isTrue(instance.postsData[0].author);
+				
+				instance.postsData = [{ author: {name: 'Test'} }];
+				instance.normalizeToIndex();
+				assert.strictEqual('Test', instance.postsData[0].author);
+				
+				instance.postsData = [{ body: '<h1>Test</h1>' }];
+				instance.normalizeToIndex();
+				assert.strictEqual('Test', instance.postsData[0].body, 'Should clean HTML tags');
+				
+				instance.postsData = [{ body: ' This is down up bacon butter on' }];
+				instance.normalizeToIndex();
+				assert.strictEqual('     bacon butter ', instance.postsData[0].body, 'Should remove some pronouns');
+			});
+		});
+		
+		describe('indexPosts', function(){
+			it('should create an json file with posts data', function(done){
+				instance2.postsData = [{ title: 'Test', body: 'Test' }];
+				
+				instance2.indexPosts().then(function(saved){
+					assert.strictEqual(JSON.stringify(instance2.postsData), saved);
+					done();
+				});
+			});
+			
+			it('should reject an promise when the path fails', function(done){
+				var old = instance2.parameters.dist;
+				instance2.parameters.dist = './path/to/error' + ( Math.random() * 100 );
+				instance2.indexPosts().catch(function(){
+					instance2.parameters.dist = old;
+					done();
+				});
+			});
+		});
+		
 		describe('execute', function(){
 			it('should call hierarchically the functions to build the content', function(){
 				instance.getFiles = function(){return new Promise(function(resolve){ resolve() });}
 				instance.buildPosts = function(){return new Promise(function(resolve){ resolve() });}
 				instance.createHome = function(){return new Promise(function(resolve){ resolve() });}
 				instance.copyStatic = function(){return new Promise(function(resolve){ resolve() });}
+				instance.indexPosts = function(){return new Promise(function(resolve){ resolve() });}
 				instance.execute();
 			});
 		});
