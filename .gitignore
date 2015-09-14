@@ -3,3 +3,4 @@ _build
 npm-debug.log
 .idea
 coverage
+path
