@@ -1,21 +1,39 @@
 'use strict';
 
+// Dependencies
+var _ 					= require('underscore'),
+	AvailableCommands	= require('./AvailableCommands');
+
 class CommandRouter {
 
 	constructor(args) {
-		this.availableCommands = {
-			'beginbbq'	: this.createNewSite.bind(this),
-			'grill'		: this.compileExistingSite.bind(this)
-		};
-
-		this.command = args[0] || 'beginbbq';
+		this.command = args[0] || 'grill';
 	}
 
 	executeAction() {
-		if (!this.availableCommands.hasOwnProperty(this.command))
-			throw new Error('Command not found');
+		if (!AvailableCommands.hasOwnProperty(this.command)) {
+			this.suggestCommand();
+			return false;
+		}
 
-		this.availableCommands[this.command]();
+		this[AvailableCommands[this.command]['method']]();
+	}
+
+	suggestCommand() {
+		var me = this,
+			suggest;
+
+		_.every(AvailableCommands, function (element, index) {
+			suggest = _.contains(element.suggests, me.command) ? index : false;
+			return !suggest;
+		});
+
+		if (suggest) {
+			console.warn('Command "' + me.command + '" was not found. Did you mean "' + suggest + '" ?');
+			return false;
+		} else {
+			throw new Error('Command unknown: ' + me.command);
+		}
 	}
 
 	createNewSite() {
