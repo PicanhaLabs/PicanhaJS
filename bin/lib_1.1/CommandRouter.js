@@ -2,7 +2,8 @@
 
 // Dependencies
 var _ 					= require('underscore'),
-	AvailableCommands	= require('./AvailableCommands');
+	AvailableCommands	= require('./AvailableCommands'),
+	helpString			= require('./helpString');
 
 class CommandRouter {
 
@@ -42,6 +43,10 @@ class CommandRouter {
 
 	compileExistingSite() {
 		console.log('compiling site');
+	}
+
+	showHelp() {
+		console.log(helpString);
 	}
 
 }
