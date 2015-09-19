@@ -21,4 +21,16 @@ describe('ArgumentsController', function() {
 		defaultArgs.pop();
 	});
 
+	it('Contructor 2', function() {
+		let AC;
+
+		defaultArgs.push('grill');
+
+		AC = new ArgumentsController(defaultArgs);
+
+		assert.isNotNull(AC.router);
+
+		defaultArgs.pop();
+	});
+
 });
