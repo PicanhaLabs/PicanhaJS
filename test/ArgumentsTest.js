@@ -2,6 +2,7 @@
 
 var assert				= require('chai').assert;
 var ArgumentsController = require('../bin/lib_1.1/ArgumentsController');
+var CommandRouter		= require('../bin/lib_1.1/CommandRouter');
 
 var defaultArgs = ['node', 'picanha'];
 
@@ -16,19 +17,7 @@ describe('ArgumentsController', function() {
 
 		AC = new ArgumentsController(defaultArgs);
 
-		assert.isDefined(AC.router);
-
-		defaultArgs.pop();
-	});
-
-	it('Contructor 2', function() {
-		let AC;
-
-		defaultArgs.push('grill');
-
-		AC = new ArgumentsController(defaultArgs);
-
-		assert.isNotNull(AC.router);
+		assert.instanceOf(AC.router, CommandRouter);
 
 		defaultArgs.pop();
 	});
