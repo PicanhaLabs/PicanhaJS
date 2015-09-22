@@ -1,19 +1,35 @@
 'use strict';
 
-var assert				= require('chai').assert;
-var ArgumentsController = require('../bin/lib_1.1/ArgumentsController');
-var CommandRouter		= require('../bin/lib_1.1/CommandRouter');
-var CustomErrors		= require('../bin/lib_1.1/CustomErrors');
 
-var ParameterNotFound = CustomErrors.ParameterNotFound;
 
-var defaultArgs = ['node', 'picanha'];
+// dependencies
+var assert				= require('chai').assert,
+	_					= require('underscore');
+
+
+
+// classes
+var ArgumentsController = require('../bin/lib_1.1/ArgumentsController'),
+	CommandRouter		= require('../bin/lib_1.1/CommandRouter'),
+	CustomErrors		= require('../bin/lib_1.1/CustomErrors');
+
+
+
+// globals
+var ParameterNotFound	= CustomErrors.ParameterNotFound,
+	defaultArgs			= ['node', 'picanha'],
+	str					= '';
 
 
 
 describe('ArgumentsController', function() {
 
-	it('Contructor', function() {
+	afterEach(function() {
+		console.log(str);
+		str = '';
+	});
+
+	it('Constructor', function() {
 		let AC;
 
 		defaultArgs.push('grill');
@@ -25,56 +41,48 @@ describe('ArgumentsController', function() {
 		defaultArgs.pop();
 	});
 
-	it('Contructor no Parameter', function() {
-		function t1(){
+	it('Constructor no parameter', function() {
+		assert.throws(function() {
 			return new ArgumentsController();
-		}
-		function t2(){
-			return new ArgumentsController(null);
-		}
-		function t3(){
-			return new ArgumentsController(undefined);
-		}
-
-		assert.throws(t1, ParameterNotFound);
-		assert.throws(t2, ParameterNotFound);
-		assert.throws(t3, ParameterNotFound);
+		},
+		ParameterNotFound);
 	});
 
-	it('Contructor wrong Parameter type', function() {
-		function t1(){
-			return new ArgumentsController({});
-		}
-		function t2(){
-			return new ArgumentsController(0);
-		}
-		function t3(){
-			return new ArgumentsController(123);
-		}
-		function t4(){
-			return new ArgumentsController(false);
-		}
-		function t5(){
-			return new ArgumentsController(true);
-		}
-		function t6(){
-			return new ArgumentsController("");
-		}
-		function t7(){
-			return new ArgumentsController(" ");
-		}
-		function t8(){
-			return new ArgumentsController("lipsum");
-		}
+	it('Constructor empty parameter', function() {
+		let emptyExamples = [
+			null,
+			undefined
+		];
+		
+		_.each(emptyExamples, function(el) {
+			str += '\tTesting ArgumentsController constructor for ' + el + ' parameter.\n';
 
-		assert.throws(t1, TypeError);
-		assert.throws(t2, TypeError);
-		assert.throws(t3, TypeError);
-		assert.throws(t4, TypeError);
-		assert.throws(t5, TypeError);
-		assert.throws(t6, TypeError);
-		assert.throws(t7, TypeError);
-		assert.throws(t8, TypeError);
+			assert.throws(function() {
+				return new ArgumentsController(el);	
+			},
+			ParameterNotFound);
+		});
 	});
 
+	it('Constructor wrong parameter type', function() {
+		let wrongTypesExamples = [
+			{},
+			0,
+			123,
+			false,
+			true,
+			"",
+			" ",
+			"lipsum"
+		];
+
+		_.each(wrongTypesExamples, function(el) {
+			str += '\tTesting ArgumentConstroller constructor for ' + el + ' parameter.\n';
+
+			assert.throws(function() {
+				return new ArgumentsController(el);	
+			},
+			TypeError);	
+		});
+	});
 });
