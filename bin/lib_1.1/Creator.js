@@ -39,7 +39,7 @@ class Creator {
 		});
 	
 
-		Promise.all(promises).then(() => console.log(color.cyan('You can start cooking!'));
+		Promise.all(promises).then(() => console.log(color.cyan('You can start cooking!')));
 	}
 }
 
