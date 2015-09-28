@@ -26,7 +26,7 @@ class Creator {
 			promises	= [];
 
 
-		console.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
+		console.log('Preparing BBQ!!');
 
 
 		_.each(me.toCopy, (current) => {
@@ -38,7 +38,7 @@ class Creator {
 		});
 	
 
-		Promise.all(promises).then( () => console.log('\x1b[36mYou can start cooking!\x1b[0m') });
+		Promise.all(promises).then(() => console.log('You can start cooking!'));
 	}
 }
 
