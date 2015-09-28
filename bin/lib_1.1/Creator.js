@@ -6,7 +6,8 @@ var _			= require('underscore'),
 	path 		= require('path'),
 	Utils		= require('./Utils'),
 	clientpath	= process.cwd(),
-	libpath 	= process.mainModule.paths[2] + '/picanhajs';
+	libpath 	= process.mainModule.paths[2] + '/picanhajs',
+	color		= require('colors/safe');;
 
 
 class Creator {
@@ -26,7 +27,7 @@ class Creator {
 			promises	= [];
 
 
-		console.log('Preparing BBQ!!');
+		console.log(color.red('Preparing BBQ!!'));
 
 
 		_.each(me.toCopy, (current) => {
@@ -38,7 +39,7 @@ class Creator {
 		});
 	
 
-		Promise.all(promises).then(() => console.log('You can start cooking!'));
+		Promise.all(promises).then(() => console.log(color.cyan('You can start cooking!'));
 	}
 }
 
