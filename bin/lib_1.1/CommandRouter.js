@@ -3,7 +3,8 @@
 // Dependencies
 var _					= require('underscore'),
 	AvailableCommands	= require('./AvailableCommands'),
-	helpString			= require('./helpString');
+	helpString			= require('./helpString'),
+	Creator				= require('./Creator');
 
 class CommandRouter {
 
@@ -38,7 +39,7 @@ class CommandRouter {
 	}
 
 	createNewSite() {
-		console.log('creating a new site');
+		new Creator().create();
 	}
 
 	compileExistingSite() {

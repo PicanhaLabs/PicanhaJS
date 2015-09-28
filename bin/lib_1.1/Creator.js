@@ -1,19 +1,19 @@
 'use strict';
 
+
 // Dependencies
 var _			= require('underscore'),
-	path 		= require('path');
+	path 		= require('path'),
+	Utils		= require('./Utils'),
+	clientpath	= process.cwd(),
+	libpath 	= process.mainModule.paths[2] + '/picanhajs';
+
 
 class Creator {
-	constructor(config) {
-		if (!config)
-			throw Error('Missing config param.');
-
-		var options = config;
-
+	constructor() {
 		this.paths = {
-			lib: options.libpath,	
-			cli: options.clientpath	
+			lib: libpath,	
+			cli: clientpath	
 		};
 	}
 
@@ -21,26 +21,24 @@ class Creator {
 		return ['/_posts', '/_templates'];
 	}
 
-	create(copyFn, verbose) {
+	create() {
 		let me			= this,
 			promises	= [];
 
-		if (verbose)
-			me.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
+
+		console.log('\n\x1b[31mPreparing BBQ.\x1b[0m\n');
 
 
-		_.each(me.toCopy, function(current) {
+		_.each(me.toCopy, (current) => {
 			let p1 = path.join(me.paths.lib, current),
 				p2 = path.join(me.paths.cli, current),
-				cp = copyFn(p1, p2);
+				cp = Utils.recursiveCopy(p1, p2);
 
 			promises.push(cp);
 		});
 	
-		Promise.all(promises).then(function() {
-			if( verbose )
-				me.log('\x1b[36mYou can start cooking!\x1b[0m');
-		});
+
+		Promise.all(promises).then( () => console.log('\x1b[36mYou can start cooking!\x1b[0m') });
 	}
 }
 

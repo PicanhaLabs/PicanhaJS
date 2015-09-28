@@ -6,6 +6,19 @@ var Utils = {
 			throw new CustomErrors.ParameterNotFound();
 		else if (!(arg instanceof type))
 			throw new TypeError("Expected an " + type.toString() + " as parametes for this constructor.");
+	},
+	
+	recursiveCopy = function (src, dest) {
+		return new Promise(function(resolve, reject) {
+			ncp(src, dest, function(error) {
+				if( error ){
+					reject(error);
+					return false;
+				}
+
+				resolve(dest);
+			});
+		});
 	}
 };
 
