@@ -1,7 +1,7 @@
 'use strict';
 
 // Dependencies
-var _ 					= require('underscore'),
+var _					= require('underscore'),
 	AvailableCommands	= require('./AvailableCommands'),
 	helpString			= require('./helpString');
 
